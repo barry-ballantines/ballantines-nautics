@@ -15,6 +15,7 @@ import tec.units.ri.format.QuantityFormat;
 
 import static org.junit.Assert.*;
 import static ballantines.nautics.units.NauticalUnits.*;
+import javax.measure.quantity.Angle;
 import javax.measure.quantity.Time;
 import static tec.units.ri.unit.Units.*;
 import static tec.units.ri.unit.MetricPrefix.*;
@@ -125,5 +126,53 @@ public class NauticalUnitsTest {
     assertEquals(75., duration.getValue().doubleValue(), 0.0);
   }
   
+  @Test
+  public void test_ARC_DEGREE_to_RADIAN() {
+    Quantity<Angle> quart = Quantities.getQuantity(90., ARC_DEGREE);
+    Quantity<Angle> radian = quart.to(RADIAN);
+    
+    System.out.println(quart + " = " + radian);
+    
+    assertEquals(Math.PI/2, radian.getValue().doubleValue(), 0.0000001);
+    
+  }
   
+  @Test
+  public void test_ARC_DEGREE_to_ARC_MINUTE() {
+    Quantity<Angle> degree = Quantities.getQuantity(1., ARC_DEGREE);
+    Quantity<Angle> minute = degree.to(ARC_MINUTE);
+    
+    System.out.println(degree + " = " + minute);
+    
+    assertEquals(60., minute.getValue().doubleValue(), 0.0000001);
+    
+  }
+  
+  @Test
+  public void test_ARC_MINUTE_to_ARC_SECOND() {
+    Quantity<Angle> minute = Quantities.getQuantity(1., ARC_MINUTE);
+    Quantity<Angle> second = minute.to(ARC_SECOND);
+    
+    System.out.println(minute + " = " + second);
+    
+    assertEquals(60., second.getValue().doubleValue(), 0.0000001);
+    
+  }
+  
+  @Test
+  public void test_ARC_parsing() {
+    QuantityFormat format = QuantityFormat.getInstance();
+    
+    Quantity<Angle> degree = format.parse("53 °");
+    Quantity<Angle> minute = format.parse("33 '");
+    Quantity<Angle> second = format.parse("55 \"");
+    
+    Quantity<Angle> position = degree.add(minute).add(second).to(ARC_DEGREE);
+    
+    System.out.println("Hamburg: " + degree + " " + minute + " " + second + " = " + position);
+    
+    assertEquals(53.5652778, position.getValue().doubleValue(), 0.0000001 );
+    
+    // 53.5652778
+  }
 }
