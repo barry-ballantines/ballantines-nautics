@@ -11,13 +11,25 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static ballantines.nautics.units.NauticalUnits.*;
 import static java.lang.System.out;
+import javax.measure.Quantity;
+import javax.measure.quantity.Time;
+import tec.units.ri.quantity.Quantities;
+import tec.units.ri.unit.Units;
 
 /**
  *
  * @author mbuse
  */
 public class PolarVectorTest {
-
+  
+  protected void assertPolarVectors(PolarVector exp, PolarVector res, double precision) {
+    assertEquals(exp.getRadian().getValue().doubleValue(), 
+                 exp.getRadian().getValue().doubleValue(), precision);
+    assertEquals(exp.getAngle().getValue().doubleValue(),
+                 res.getAngle().getValue().doubleValue(), precision);
+    
+  }
+  
   /**
    * Test of add method, of class PolarVector.
    */
@@ -39,16 +51,7 @@ public class PolarVectorTest {
     assertPolarVectors(expectedResult, velocityOverGround, 0.1);
     
   }
-  
-  protected void assertPolarVectors(PolarVector exp, PolarVector res, double precision) {
-    assertEquals(exp.getRadian().getValue().doubleValue(), 
-                 exp.getRadian().getValue().doubleValue(), precision);
-    assertEquals(exp.getAngle().getValue().doubleValue(),
-                 res.getAngle().getValue().doubleValue(), precision);
-    
-  }
 
-  
   @Test
   public void testReverse() {
     out.println("PolarVector.reverse()");
@@ -64,13 +67,37 @@ public class PolarVectorTest {
    */
   @Test
   public void testSubstract() {
-    System.out.println("PolarVector.substract()");
+    out.println("PolarVector.substract()");
     PolarVector<Speed> velocityRelativeToWater = PolarVector.create(8., KNOT, 35., ARC_DEGREE);
     PolarVector<Speed> velocityStream = PolarVector.create(1.2, KNOT, 270., ARC_DEGREE);
     PolarVector<Speed> velocityOverGround = PolarVector.create(7.4, KNOT, 27.4, ARC_DEGREE);
   
     assertPolarVectors(velocityRelativeToWater, velocityOverGround.subtract(velocityStream), 0.1);
     
+  }
+  
+  /**
+   * Test of multiply method, of class PolarVector.
+   */
+  @Test
+  public void testMultiply() {
+    out.println("PolarVector.multiply()");
+    // velocity = 8 kn, 90°
+    PolarVector<Speed> velocity = PolarVector.create(8, KNOT, 90, ARC_DEGREE);
+    
+    // time = 90 min
+    Quantity<Time> duration = Quantities.getQuantity(90., Units.MINUTE);
+    
+    // dead reckoning = 12 nm, 90°
+    PolarVector<Length> deadReckoning = velocity.multiply(duration);
+    
+    out.println("   velocity : " + velocity);
+    out.println(" * duration : " + duration);
+    out.println(" = D.R.     : " + deadReckoning);
+    
+    assertEquals(velocity.getAngle(), deadReckoning.getAngle());
+    assertTrue(deadReckoning.getRadian().getUnit().isCompatible(NAUTICAL_MILE));
+    assertEquals(12., deadReckoning.getRadian().to(NAUTICAL_MILE).getValue().doubleValue(), 0.0);
   }
 
   

@@ -69,6 +69,12 @@ public class PolarVector<T extends Quantity<T>> {
     return this.add(other.reverse());
   }
   
+  public <U extends Quantity<U>> PolarVector<U> multiply(Quantity<?> factor) {
+    Quantity<U> product = (Quantity<U>) this.radian.multiply(factor);
+    
+    return new PolarVector<U>(product, this.angle);
+  }
+  
   public PolarVector<T> reverse() {
     double phi = getAngle(NauticalUnits.ARC_DEGREE);
     phi = (phi + 180.) % 360.;
