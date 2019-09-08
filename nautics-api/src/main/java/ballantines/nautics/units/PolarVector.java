@@ -58,13 +58,13 @@ public class PolarVector<T extends Quantity<T>> {
     return radian;
   }
   
-  public double getValue(Unit<T> unit) {
+  public double getRadian(Unit<T> unit) {
     return radian.to(unit).getValue().doubleValue();
   }
  
   public PolarVector<T> add(PolarVector<T> other) {
     double r1 = this.radian.getValue().doubleValue();
-    double r2 = other.getValue(this.radian.getUnit());
+    double r2 = other.getRadian(this.radian.getUnit());
     double phi1 = this.getAngle(Units.RADIAN);
     double phi2 = other.getAngle(Units.RADIAN);
     
