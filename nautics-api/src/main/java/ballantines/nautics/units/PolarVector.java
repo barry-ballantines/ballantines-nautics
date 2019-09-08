@@ -33,6 +33,18 @@ public class PolarVector<T extends Quantity<T>> {
     this.angle = angle;
     this.radian = value;
   }
+  
+  public PolarVector<T> to(Unit<T> radianUnit, Unit<Angle> angleUnit) {
+    return new PolarVector<T>(radian.to(radianUnit), angle.to(angleUnit));
+  }
+  public PolarVector<T> toRadianUnit(Unit<T> radianUnit) {
+    if (radian.getUnit().equals(radianUnit)) return this;
+    return new PolarVector<T>(radian.to(radianUnit), angle);
+  }
+  public PolarVector<T> toAngleUnit(Unit<Angle> angleUnit) {
+    if (angle.getUnit().equals(angleUnit)) return this;
+    return new PolarVector<T>(radian, angle.to(angleUnit));
+  }
 
   public Quantity<Angle> getAngle() {
     return angle;
