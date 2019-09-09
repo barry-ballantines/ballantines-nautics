@@ -23,8 +23,8 @@ import tec.units.ri.unit.Units;
 public class PolarVectorTest {
   
   protected void assertPolarVectors(PolarVector exp, PolarVector res, double precision) {
-    assertEquals(exp.getRadian().getValue().doubleValue(), 
-                 exp.getRadian().getValue().doubleValue(), precision);
+    assertEquals(exp.getRadial().getValue().doubleValue(), 
+                 exp.getRadial().getValue().doubleValue(), precision);
     assertEquals(exp.getAngle().getValue().doubleValue(),
                  res.getAngle().getValue().doubleValue(), precision);
     
@@ -96,8 +96,8 @@ public class PolarVectorTest {
     out.println(" = D.R.     : " + deadReckoning);
     
     assertEquals(velocity.getAngle(), deadReckoning.getAngle());
-    assertTrue(deadReckoning.getRadian().getUnit().isCompatible(NAUTICAL_MILE));
-    assertEquals(12., deadReckoning.getRadian().to(NAUTICAL_MILE).getValue().doubleValue(), 0.0);
+    assertTrue(deadReckoning.getRadial().getUnit().isCompatible(NAUTICAL_MILE));
+    assertEquals(12., deadReckoning.getRadial().to(NAUTICAL_MILE).getValue().doubleValue(), 0.0);
   }
 
   

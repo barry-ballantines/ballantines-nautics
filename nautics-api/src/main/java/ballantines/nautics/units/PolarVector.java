@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ballantines.nautics.units;
 
 import javax.measure.Dimension;
@@ -16,8 +11,8 @@ import javax.measure.Unit;
 import tec.units.ri.quantity.Quantities;
 /**
  *
- * @author mbuse
- * @param <T> The radian type
+ * @author barry
+ * @param <T> The type of the radial coordinate
  */
 public class PolarVector<T extends Quantity<T>> {
   
@@ -26,24 +21,24 @@ public class PolarVector<T extends Quantity<T>> {
   }
   
   private Quantity<Angle> angle;
-  private Quantity<T> radian;
+  private Quantity<T> radial;
   
   public PolarVector(Quantity<T> value, Quantity<Angle> angle) {
     assert value.getValue().doubleValue() >= 0.;
     this.angle = angle;
-    this.radian = value;
+    this.radial = value;
   }
   
-  public PolarVector<T> to(Unit<T> radianUnit, Unit<Angle> angleUnit) {
-    return new PolarVector<T>(radian.to(radianUnit), angle.to(angleUnit));
+  public PolarVector<T> to(Unit<T> radialUnit, Unit<Angle> angleUnit) {
+    return new PolarVector<T>(radial.to(radialUnit), angle.to(angleUnit));
   }
-  public PolarVector<T> toRadianUnit(Unit<T> radianUnit) {
-    if (radian.getUnit().equals(radianUnit)) return this;
-    return new PolarVector<T>(radian.to(radianUnit), angle);
+  public PolarVector<T> toRadialUnit(Unit<T> radialUnit) {
+    if (radial.getUnit().equals(radialUnit)) return this;
+    return new PolarVector<T>(radial.to(radialUnit), angle);
   }
   public PolarVector<T> toAngleUnit(Unit<Angle> angleUnit) {
     if (angle.getUnit().equals(angleUnit)) return this;
-    return new PolarVector<T>(radian, angle.to(angleUnit));
+    return new PolarVector<T>(radial, angle.to(angleUnit));
   }
 
   public Quantity<Angle> getAngle() {
@@ -54,17 +49,17 @@ public class PolarVector<T extends Quantity<T>> {
     return angle.to(unit).getValue().doubleValue();
   }
 
-  public Quantity<T> getRadian() {
-    return radian;
+  public Quantity<T> getRadial() {
+    return radial;
   }
   
-  public double getRadian(Unit<T> unit) {
-    return radian.to(unit).getValue().doubleValue();
+  public double getRadial(Unit<T> unit) {
+    return radial.to(unit).getValue().doubleValue();
   }
  
   public PolarVector<T> add(PolarVector<T> other) {
-    double r1 = this.radian.getValue().doubleValue();
-    double r2 = other.getRadian(this.radian.getUnit());
+    double r1 = this.radial.getValue().doubleValue();
+    double r2 = other.getRadial(this.radial.getUnit());
     double phi1 = this.getAngle(Units.RADIAN);
     double phi2 = other.getAngle(Units.RADIAN);
     
@@ -72,7 +67,7 @@ public class PolarVector<T extends Quantity<T>> {
     double phi = phi1 + atan2(r2*sin(phi2-phi1), r1 + r2*cos(phi2-phi1));
     
     Quantity<Angle> angle = Quantities.getQuantity(phi, Units.RADIAN).to(this.angle.getUnit());
-    Quantity<T> value = Quantities.getQuantity(r, this.radian.getUnit());
+    Quantity<T> value = Quantities.getQuantity(r, this.radial.getUnit());
     
     return createSameTypeAsThis(value, angle); 
   }
@@ -81,8 +76,48 @@ public class PolarVector<T extends Quantity<T>> {
     return this.add(other.reverse());
   }
   
+  /**
+   * Rotates the vector by the given turn angle. 
+   * 
+   * The radial component is unchanged. The new polar vector is calculated by the formular:
+   * 
+   * <code>(r, phi).rotateClockwise(theta) = (r, phi + theta)</code>
+   * 
+   * If the turn angle is positive (0° &lt; turn &lt; 180°), the turn is clockwise.
+   * If the turn angle is negative (0° &gt; turn &gt; -180°), the turn is counter-clockwise.
+   * 
+   * 
+   * @param turn  the turn angle
+   * @return a new polar vector with the same units as this vector.
+   */
+  public PolarVector<T> rotateClockwise(Quantity<Angle> turn) {
+    double phi = this.angle.getValue().doubleValue();
+    phi = phi + turn.to(this.angle.getUnit()).getValue().doubleValue();
+    return new PolarVector<T>(this.radial, Quantities.getQuantity(phi, this.angle.getUnit()));
+  }
+  
+  /**
+   * Rotates the vector by the given turn angle. 
+   * 
+   * The radial component is unchanged. The new polar vector is calculated by the formular:
+   * 
+   * <code>(r, phi).rotateCounterClockwise(theta) = (r, phi - theta)</code>
+   * 
+   * If the turn angle is positive (0° &lt; turn &lt; 180°), the turn is clockwise.
+   * If the turn angle is negative (0° &gt; turn &gt; -180°), the turn is counter-clockwise.
+   * 
+   * 
+   * @param turn  the turn angle
+   * @return a new polar vector with the same units as this vector.
+   */
+  public PolarVector<T> rotateCounterClockwise(Quantity<Angle> turn) {
+    double phi = this.angle.getValue().doubleValue();
+    phi = phi - turn.to(this.angle.getUnit()).getValue().doubleValue();
+    return new PolarVector<T>(this.radial, Quantities.getQuantity(phi, this.angle.getUnit()));
+  }
+  
   public <U extends Quantity<U>> PolarVector<U> multiply(Quantity<?> factor) {
-    Quantity<U> product = (Quantity<U>) this.radian.multiply(factor);
+    Quantity<U> product = (Quantity<U>) this.radial.multiply(factor);
     
     return new PolarVector<U>(product, this.angle);
   }
@@ -90,7 +125,7 @@ public class PolarVector<T extends Quantity<T>> {
   public PolarVector<T> reverse() {
     double phi = getAngle(NauticalUnits.ARC_DEGREE);
     phi = (phi + 180.) % 360.;
-    return new PolarVector<T>(radian, Quantities.getQuantity(phi, NauticalUnits.ARC_DEGREE).to(angle.getUnit()));
+    return new PolarVector<T>(radial, Quantities.getQuantity(phi, NauticalUnits.ARC_DEGREE).to(angle.getUnit()));
   }
   
   protected PolarVector<T> createSameTypeAsThis(Quantity<T> value, Quantity<Angle> angle) {
@@ -101,7 +136,7 @@ public class PolarVector<T extends Quantity<T>> {
   public int hashCode() {
     int hash = 7;
     hash = 67 * hash + Objects.hashCode(this.angle);
-    hash = 67 * hash + Objects.hashCode(this.radian);
+    hash = 67 * hash + Objects.hashCode(this.radial);
     return hash;
   }
 
@@ -120,14 +155,14 @@ public class PolarVector<T extends Quantity<T>> {
     if (!Objects.equals(this.angle, other.angle)) {
       return false;
     }
-    if (!Objects.equals(this.radian, other.radian)) {
+    if (!Objects.equals(this.radial, other.radial)) {
       return false;
     }
     return true;
   }
   
   public String toString() {
-    return "(" + radian + "; " + angle + ")";
+    return "(" + radial + "; " + angle + ")";
   }
   
 }
