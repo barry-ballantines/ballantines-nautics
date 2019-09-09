@@ -1,10 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ballantines.nautics.routing.polar;
 
+import ballantines.nautics.routing.polar.internal.SingleWindSpeedPolar;
+import ballantines.nautics.routing.polar.internal.InterpolatingWindSpeedInterval;
+import ballantines.nautics.routing.polar.internal.WindSpeedInterval;
 import ballantines.nautics.units.NauticalUnits;
 import ballantines.nautics.units.PolarVector;
 import java.util.LinkedList;
@@ -14,96 +12,82 @@ import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Speed;
+import tec.units.ri.quantity.Quantities;
 
 /**
+ * Default implementation for a Polar diagram.
+ * 
+ * The polar data can be defined as described here:
+ * 
+ * <pre>
+ *   DefaultPolar polar = new DefaultPolar();
+ *   polar.newTWA(Quantities.getQuantity(10, KNOT))
+ *        .add(PolarVector.create(0, KNOT, 0, ARC_DEGREE)
+ *        .add(PolarVector.create(30, KNOT, 4, ARC_DEGREE)
+ *        ...
+ *        .add(PolarVector.create(10, KNOT, 180, ARC_DEGREE);
+ *   polar.newTWA(Quantities.getQuantity(15, KNOT))
+ *        .add(PolarVector.create(0, KNOT, 0, ARC_DEGREE)
+ *        ...
+ *        .add(PolarVector.create(12, KNOT, 180, ARC_DEGREE);
+ *   polar.newTWA( nextTWA )
+ *        .add(...) // and so on...
+ * </pre>
  *
- * @author mbuse
+ * @author barry
  */
 public class DefaultPolar implements Polar {
   
-  private static Unit<Speed> SPEED_UNIT = NauticalUnits.KNOT;
-  private static Unit<Angle> ANGLE_UNIT = NauticalUnits.ARC_DEGREE;
+  public static Unit<Speed> WIND_SPEED_UNIT = NauticalUnits.KNOT;
+  public static Unit<Speed> BOAT_SPEED_UNIT = NauticalUnits.KNOT;
+  public static Unit<Angle> ANGLE_UNIT = NauticalUnits.ARC_DEGREE;
+  
+  private List<WindSpeedInterval> windSpeedIntervals = new LinkedList<>();
+  
+  private SingleWindSpeedPolar lastWindSpeedPolar = null;
 
   @Override
   public PolarVector<Speed> getVelocity(Quantity<Speed> trueWindSpeed, Quantity<Angle> trueWindAngle) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-  }
-  
-  
-  /** a sector for calculating the boat speeds between 2 fixed angles. **/
-  public static interface AngularSector {
-    /** the given angle is within the given sector **/
-    boolean matches(Quantity<Angle> angle);
-    
-    Quantity<Speed> getVelocity(Quantity<Angle> angle);
-  }
-  
-  public static class SingleWindSpeedPolar {
-    private List<AngularSector> angularSectors = new LinkedList<>();
-    private Quantity<Speed> trueWindSpeed;
-    
-    private PolarVector<Speed> lastEntry=null;
-    
-    
-    public SingleWindSpeedPolar(Quantity<Speed> trueWindSpeed) {
-      this.trueWindSpeed = trueWindSpeed.to(SPEED_UNIT);
+    Quantity<Angle> normalizedTWA = normalizeTWA(trueWindAngle);
+    Optional<WindSpeedInterval> optionalWSI 
+            = windSpeedIntervals.stream().filter((wsi) -> wsi.matches(trueWindSpeed)).findFirst();
+    if (optionalWSI.isPresent()) {
+      Quantity<Speed> boatSpeed = optionalWSI.get().getVelocity(trueWindSpeed, normalizedTWA);
+      return new PolarVector(boatSpeed, trueWindAngle);
     }
-    
-    public Quantity<Speed> getVelocity(Quantity<Angle> angle) {
-      Optional<AngularSector> optionalSector = angularSectors.stream().filter(sector -> sector.matches(angle)).findFirst();
-      if (optionalSector.isPresent()) {
-        return optionalSector.get().getVelocity(angle);
-      }
-      else {
-        return null;
-      }
-    }
-    
-    public void add(PolarVector<Speed> newEntry) {
-      if (lastEntry==null) {
-        lastEntry = newEntry.to(SPEED_UNIT, ANGLE_UNIT);
-        return;
-      }
-      newEntry = newEntry.to(SPEED_UNIT, ANGLE_UNIT);
-      if (newEntry.getAngle().getValue().doubleValue() <= lastEntry.getAngle().getValue().doubleValue()) {
-        throw new IllegalArgumentException("Invalid entry: values must be added with increasing angles!");
-      }
-      angularSectors.add(new InterpolatingAngularSector(lastEntry, newEntry));
-      lastEntry = newEntry;
+    else {
+      return null;
     }
   }
- 
   
-  public static class InterpolatingAngularSector implements AngularSector {
-    
-    private PolarVector<Speed> start;
-    private PolarVector<Speed> end;
-    
-    private Quantity<Angle> deltaAngle;
-    private Quantity<Speed> deltaSpeed;
-    
-    public InterpolatingAngularSector(PolarVector<Speed> start, PolarVector<Speed> end) {
-      this.start = start.to(SPEED_UNIT, ANGLE_UNIT);
-      this.end = end.to(SPEED_UNIT, ANGLE_UNIT);
-      
-      deltaAngle = end.getAngle().subtract(start.getAngle());
-      deltaSpeed = end.getRadian().subtract(start.getRadian());
+  public SingleWindSpeedPolar newTWS(Quantity<Speed> tws) {
+    if (this.lastWindSpeedPolar==null) {
+      this.lastWindSpeedPolar = new SingleWindSpeedPolar(Quantities.getQuantity(0.0, WIND_SPEED_UNIT));
+      this.lastWindSpeedPolar.add(PolarVector.create(0.0, BOAT_SPEED_UNIT, 0.0, ANGLE_UNIT));
+      this.lastWindSpeedPolar.add(PolarVector.create(0.0, BOAT_SPEED_UNIT, 180.0, ANGLE_UNIT));
     }
-
-    @Override
-    public boolean matches(Quantity<Angle> angle) {
-      double angleValue = angle.to(ANGLE_UNIT).getValue().doubleValue();
-      return (angleValue>=start.getAngle().getValue().doubleValue()
-           && angleValue<=end.getAngle().getValue().doubleValue());
+    
+    tws = tws.to(WIND_SPEED_UNIT);
+    if (tws.getValue().doubleValue() <= this.lastWindSpeedPolar.getTrueWindSpeed().getValue().doubleValue()) {
+      throw new IllegalArgumentException("True Wind Speed is not larger than previous TWA!");
     }
-
-    @Override
-    public Quantity<Speed> getVelocity(Quantity<Angle> angle) {
-      Quantity<Angle> angleDistanceFromStart = angle.subtract(start.getAngle());
-      double factor = angleDistanceFromStart.divide(deltaAngle).getValue().doubleValue();
-      Quantity<Speed> result = start.getRadian().add(deltaSpeed.multiply(factor));
-      return result;
+    
+    SingleWindSpeedPolar nextWindSpeedPolar = new SingleWindSpeedPolar(tws);
+    WindSpeedInterval interval = new InterpolatingWindSpeedInterval(lastWindSpeedPolar, nextWindSpeedPolar);
+    
+    this.windSpeedIntervals.add(interval);
+    this.lastWindSpeedPolar = nextWindSpeedPolar;
+    
+    return nextWindSpeedPolar;
+  }
+  
+  private Quantity<Angle> normalizeTWA(Quantity<Angle> twa) {
+    double degrees = twa.to(ANGLE_UNIT).getValue().doubleValue();
+    if (degrees>=0. && degrees<= 180.) {
+      return twa;
     }
+    double normalizedDegrees = Math.abs(((degrees + 180.) % 360.)- 180.);
+    return Quantities.getQuantity(normalizedDegrees, ANGLE_UNIT).asType(Angle.class);
     
   }
 }

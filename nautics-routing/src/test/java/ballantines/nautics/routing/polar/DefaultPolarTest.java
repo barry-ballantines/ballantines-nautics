@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ballantines.nautics.routing.polar;
 
 import java.util.function.Function;
@@ -12,19 +7,19 @@ import javax.measure.quantity.Angle;
 import tec.units.ri.quantity.Quantities;
 
 import ballantines.nautics.units.PolarVector;
-import ballantines.nautics.routing.polar.DefaultPolar;
-import ballantines.nautics.routing.polar.DefaultPolar.SingleWindSpeedPolar;
-import ballantines.nautics.routing.polar.DefaultPolar.AngularSector;
-import ballantines.nautics.routing.polar.DefaultPolar.InterpolatingAngularSector;
+import ballantines.nautics.routing.polar.internal.SingleWindSpeedPolar;
+import ballantines.nautics.routing.polar.internal.AngularSector;
+import ballantines.nautics.routing.polar.internal.InterpolatingAngularSector;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 import static ballantines.nautics.units.NauticalUnits.*;
+import java.util.function.BiFunction;
 
 /**
  *
- * @author mbuse
+ * @author barry
  */
 public class DefaultPolarTest {
  
@@ -58,13 +53,13 @@ public class DefaultPolarTest {
   @Test
   public void testSingleWindSpeedPolar() {
     System.out.println("test SingleWindSpeedPolar");
-    DefaultPolar.SingleWindSpeedPolar polar = new SingleWindSpeedPolar(toSpeed(10.));
-    polar.add(toVelocity(0,0));
-    polar.add(toVelocity(30, 6.0));
-    polar.add(toVelocity(90, 8.0));
-    polar.add(toVelocity(120, 10.0));
-    polar.add(toVelocity(160, 12.0));
-    polar.add(toVelocity(180, 10.0));
+    SingleWindSpeedPolar polar = new SingleWindSpeedPolar(toSpeed(10.));
+    polar.add(toVelocity(0,0))
+            .add(toVelocity(30, 6.0))
+            .add(toVelocity(90, 8.0))
+            .add(toVelocity(120, 10.0))
+            .add(toVelocity(160, 12.0))
+            .add(toVelocity(180, 10.0));
     
     
     Function<Double, Double> results = (degree) -> polar.getVelocity(toAngle(degree)).to(KNOT).getValue().doubleValue();
@@ -82,10 +77,57 @@ public class DefaultPolarTest {
     assertEquals(10.0, results.apply(180.), 0.0);
   }
   
-  private DefaultPolar.AngularSector createInterpolatingAngularSector(double startAngle, double startSpeed, double endAngle, double endSpeed) {
+  @Test
+  public void testDefaultPolar() {
+    System.out.println("test DefaultPolar");
+    DefaultPolar polar = new DefaultPolar();
+    
+    polar.newTWS(toSpeed(10.))
+            .add(toVelocity(0,0))
+            .add(toVelocity(30, 6.0))
+            .add(toVelocity(90, 8.0))
+            .add(toVelocity(120, 10.0))
+            .add(toVelocity(160, 12.0))
+            .add(toVelocity(180, 10.0));
+    polar.newTWS(toSpeed(20.))
+            .add(toVelocity(0,0))
+            .add(toVelocity(30, 8.0))
+            .add(toVelocity(90, 10.0))
+            .add(toVelocity(120, 12.0))
+            .add(toVelocity(160, 14.0))
+            .add(toVelocity(180, 12.0));
+    
+    BiFunction<Double,Double,Double> test = (tws, twa) -> {
+      return polar.getVelocity(toSpeed(tws), toAngle(twa)).getRadian(KNOT);
+    };
+    
+    // tws=0 -> v=0
+    assertEquals(0.0, test.apply(0.0, 15.0), 0.0); 
+    
+    // tws/twa defined... take speed from tws/twa cell
+    assertEquals(6.0, test.apply(10.0, 30.0), 0.0); 
+    assertEquals(8.0, test.apply(20.0, 30.0), 0.0);
+    
+    // interpolating twa
+    assertEquals(7.0, test.apply(10.0, 60.0), 0.0);
+    assertEquals(13.0, test.apply(20.0, 170.0), 0.0);
+    
+    // interpolating tws
+    assertEquals(9.0, test.apply(15.0, 90.0), 0.0);
+    
+    // interpolating twa/tws
+    assertEquals(8.0, test.apply(15.0, 60.0), 0.0);
+    
+    // check angles out of [0,180]
+    assertEquals(8.0, test.apply(15.0, 300.0), 0.0);
+    assertEquals(8.0, test.apply(15.0, -60.0), 0.0);
+    
+  }
+  
+  private AngularSector createInterpolatingAngularSector(double startAngle, double startSpeed, double endAngle, double endSpeed) {
     PolarVector<Speed> start = PolarVector.create(startSpeed, KNOT, startAngle, ARC_DEGREE);
     PolarVector<Speed> end = PolarVector.create(endSpeed, KNOT, endAngle, ARC_DEGREE);
-    return new DefaultPolar.InterpolatingAngularSector(start, end);
+    return new InterpolatingAngularSector(start, end);
   }
   
   
