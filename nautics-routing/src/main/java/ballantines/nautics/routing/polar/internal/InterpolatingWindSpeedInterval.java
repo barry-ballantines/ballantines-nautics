@@ -42,5 +42,17 @@ public class InterpolatingWindSpeedInterval implements WindSpeedInterval {
     Quantity<Speed> interpolatedBoatSpeed = startSpeed.add(deltaBoatSpeed.multiply(factor));
     return interpolatedBoatSpeed;
   }
+
+  @Override
+  public Quantity<Speed> getLowerTWS() {
+    return lowerTWAPolar.getTrueWindSpeed();
+  }
+  
+  @Override
+  public Quantity<Speed> getUpperTWS() {
+    return upperTWAPolar.getTrueWindSpeed();
+  }
+  
+  
   
 }

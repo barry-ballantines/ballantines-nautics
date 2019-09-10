@@ -59,15 +59,31 @@ public class DefaultPolar implements Polar {
       return null;
     }
   }
+
+  @Override
+  public Quantity<Speed> getMaximumTrueWindSpeed() {
+    return this.windSpeedIntervals.get(this.windSpeedIntervals.size()-1).getUpperTWS();
+  }
+  
+  
   
   public SingleWindSpeedPolar newTWS(Quantity<Speed> tws) {
+    tws = tws.to(WIND_SPEED_UNIT);
+    
     if (this.lastWindSpeedPolar==null) {
       this.lastWindSpeedPolar = new SingleWindSpeedPolar(Quantities.getQuantity(0.0, WIND_SPEED_UNIT));
-      this.lastWindSpeedPolar.add(PolarVector.create(0.0, BOAT_SPEED_UNIT, 0.0, ANGLE_UNIT));
-      this.lastWindSpeedPolar.add(PolarVector.create(0.0, BOAT_SPEED_UNIT, 180.0, ANGLE_UNIT));
+      if (tws.getValue().doubleValue() == 0.0) {
+        // lets fill the TWA=0 record...
+        return this.lastWindSpeedPolar;
+      }
+      else {
+        // Add missing TWS=0 record...
+        this.lastWindSpeedPolar.add(PolarVector.create(0.0, BOAT_SPEED_UNIT, 0.0, ANGLE_UNIT));
+        this.lastWindSpeedPolar.add(PolarVector.create(0.0, BOAT_SPEED_UNIT, 180.0, ANGLE_UNIT));
+      
+      }
     }
     
-    tws = tws.to(WIND_SPEED_UNIT);
     if (tws.getValue().doubleValue() <= this.lastWindSpeedPolar.getTrueWindSpeed().getValue().doubleValue()) {
       throw new IllegalArgumentException("True Wind Speed is not larger than previous TWA!");
     }

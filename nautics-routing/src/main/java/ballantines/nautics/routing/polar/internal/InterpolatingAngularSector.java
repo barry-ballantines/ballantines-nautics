@@ -22,7 +22,7 @@ public class InterpolatingAngularSector implements AngularSector {
     this.lowerBoatVelocity = lowerBoatVelocity.to(DefaultPolar.BOAT_SPEED_UNIT, DefaultPolar.ANGLE_UNIT);
     this.upperBoatVelocity = upperBoatVelocity.to(DefaultPolar.BOAT_SPEED_UNIT, DefaultPolar.ANGLE_UNIT);
     deltaAngle = upperBoatVelocity.getAngle().subtract(lowerBoatVelocity.getAngle());
-    deltaSpeed = upperBoatVelocity.getRadian().subtract(lowerBoatVelocity.getRadian());
+    deltaSpeed = upperBoatVelocity.getRadial().subtract(lowerBoatVelocity.getRadial());
   }
 
   @Override
@@ -36,7 +36,7 @@ public class InterpolatingAngularSector implements AngularSector {
   public Quantity<Speed> getVelocity(Quantity<Angle> angle) {
     Quantity<Angle> angleDistanceFromStart = angle.subtract(lowerBoatVelocity.getAngle());
     double factor = angleDistanceFromStart.divide(deltaAngle).getValue().doubleValue();
-    Quantity<Speed> result = lowerBoatVelocity.getRadian().add(deltaSpeed.multiply(factor));
+    Quantity<Speed> result = lowerBoatVelocity.getRadial().add(deltaSpeed.multiply(factor));
     return result;
   }
   

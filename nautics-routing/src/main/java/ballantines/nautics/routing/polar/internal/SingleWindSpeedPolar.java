@@ -34,11 +34,17 @@ public class SingleWindSpeedPolar {
   }
 
   public SingleWindSpeedPolar add(PolarVector<Speed> newBoatSpeed) {
-    if (lastEntry == null) {
-      lastEntry = newBoatSpeed.to(DefaultPolar.BOAT_SPEED_UNIT, DefaultPolar.ANGLE_UNIT);
-      return this;
-    }
     newBoatSpeed = newBoatSpeed.to(DefaultPolar.BOAT_SPEED_UNIT, DefaultPolar.ANGLE_UNIT);
+    if (lastEntry == null) {
+      // first entry
+      if (newBoatSpeed.getAngle().getValue().doubleValue()>0) {
+        lastEntry = PolarVector.create(0.0, DefaultPolar.BOAT_SPEED_UNIT, 0.0, DefaultPolar.ANGLE_UNIT);
+      } else {
+        lastEntry = newBoatSpeed;
+        return this;
+      }
+    }
+    
     if (newBoatSpeed.getAngle().getValue().doubleValue() <= lastEntry.getAngle().getValue().doubleValue()) {
       throw new IllegalArgumentException("Invalid entry: values must be added with increasing angles!");
     }

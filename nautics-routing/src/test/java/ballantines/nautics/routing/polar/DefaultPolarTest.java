@@ -98,7 +98,7 @@ public class DefaultPolarTest {
             .add(toVelocity(180, 12.0));
     
     BiFunction<Double,Double,Double> test = (tws, twa) -> {
-      return polar.getVelocity(toSpeed(tws), toAngle(twa)).getRadian(KNOT);
+      return polar.getVelocity(toSpeed(tws), toAngle(twa)).getRadial(KNOT);
     };
     
     // tws=0 -> v=0

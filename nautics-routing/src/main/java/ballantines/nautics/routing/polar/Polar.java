@@ -20,4 +20,9 @@ public interface Polar {
    */
   PolarVector<Speed> getVelocity(Quantity<Speed> trueWindSpeed, Quantity<Angle> trueWindAngle);
   
+  /**
+   * Return the maximum true wind speed (TWS)
+   */
+  Quantity<Speed> getMaximumTrueWindSpeed();
+  
 }

@@ -16,4 +16,8 @@ public interface WindSpeedInterval {
   /** the boat speed for a given twa and tws **/
   Quantity<Speed> getVelocity(Quantity<Speed> trueWindSpeed, Quantity<Angle> trueWindAngle);
   
+  Quantity<Speed> getLowerTWS();
+  
+  Quantity<Speed> getUpperTWS();
+  
 }
