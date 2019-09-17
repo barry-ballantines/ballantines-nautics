@@ -8,8 +8,10 @@ package ballantines.nautics.units;
 import javax.measure.Quantity;
 import javax.measure.quantity.Angle;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import tec.units.ri.quantity.Quantities;
+
+import static org.junit.Assert.*;
+import static ballantines.nautics.units.NauticalUnits.degrees;
 
 /**
  *
@@ -50,7 +52,7 @@ public class AngleUtilTest {
   }
   
   private void assertNormalizeToLowerBound(double expected, double degrees, Quantity<Angle> lowerBound) {
-    Quantity<Angle> angle = Quantities.getQuantity(degrees, NauticalUnits.ARC_DEGREE);
+    Quantity<Angle> angle = degrees(degrees);
     Quantity<Angle> result = AngleUtil.normalizeToLowerBound(angle, lowerBound);
     assertEquals(expected, result.getValue().doubleValue(), 0.000001);
   }
@@ -67,7 +69,7 @@ public class AngleUtilTest {
   }
   
   private void assertNormalizeToUpperBound(double expected, double degrees, Quantity<Angle> upperBound) {
-    Quantity<Angle> angle = Quantities.getQuantity(degrees, NauticalUnits.ARC_DEGREE);
+    Quantity<Angle> angle = degrees(degrees);
     Quantity<Angle> result = AngleUtil.normalizeToUpperBound(angle, upperBound);
     assertEquals(expected, result.getValue().doubleValue(), 0.000001);
   }

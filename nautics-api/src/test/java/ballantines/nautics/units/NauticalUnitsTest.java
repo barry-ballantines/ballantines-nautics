@@ -10,13 +10,13 @@ import org.junit.Test;
 import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Speed;
+import javax.measure.quantity.Angle;
+import javax.measure.quantity.Time;
 import tec.units.ri.quantity.Quantities;
 import tec.units.ri.format.QuantityFormat;
 
 import static org.junit.Assert.*;
 import static ballantines.nautics.units.NauticalUnits.*;
-import javax.measure.quantity.Angle;
-import javax.measure.quantity.Time;
 import static tec.units.ri.unit.Units.*;
 import static tec.units.ri.unit.MetricPrefix.*;
 
@@ -28,7 +28,7 @@ public class NauticalUnitsTest {
 
   @Test
   public void test_NAUTICAL_MILE_to_METRE() {
-    Quantity<Length> lengthInMiles = Quantities.getQuantity(5.0, NAUTICAL_MILE);
+    Quantity<Length> lengthInMiles = nauticalMiles(5.0);
     Quantity<Length> lengthInMetre = lengthInMiles.to(METRE);
     System.out.println(lengthInMiles + " = " + lengthInMetre);
     assertEquals(1852 * 5, lengthInMetre.getValue().doubleValue(), 0.0);
@@ -44,7 +44,7 @@ public class NauticalUnitsTest {
   
   @Test
   public void test_NAUTICAL_MILE_calculation() {
-    Quantity<Length> nm = Quantities.getQuantity(1., NAUTICAL_MILE);
+    Quantity<Length> nm = nauticalMiles(1.);
     Quantity<Length> m = Quantities.getQuantity(148., METRE);
     Quantity<Length> sum = nm.add(m);
     
@@ -56,9 +56,9 @@ public class NauticalUnitsTest {
   public void test_NAUTICAL_MILE_parsing() {
     QuantityFormat format = QuantityFormat.getInstance();
     
-    Quantity<Length> a = format.parse("1 nm");
-    Quantity<Length> b = format.parse("1 nmi");
-    Quantity<Length> c = format.parse("1 sm");
+    Quantity<Length> a = format.parse("1 nm").asType(Length.class);
+    Quantity<Length> b = format.parse("1 nmi").asType(Length.class);
+    Quantity<Length> c = format.parse("1 sm").asType(Length.class);
     
     assertEquals(NAUTICAL_MILE, a.getUnit());
     assertEquals(NAUTICAL_MILE, b.getUnit());
@@ -69,7 +69,7 @@ public class NauticalUnitsTest {
   
   @Test
   public void test_KNOT_to_METRE_PER_SECOND() {
-    Quantity<Speed> speedKn = Quantities.getQuantity(1.0, KNOT);
+    Quantity<Speed> speedKn = knots(1.0);
     Quantity<Speed> speedMS = speedKn.to(METRE_PER_SECOND);
     
     System.out.println( speedKn + " = " + speedMS);
@@ -79,7 +79,7 @@ public class NauticalUnitsTest {
   
   @Test
   public void test_KNOT_to_KILOMETRE_PER_HOUR() {
-    Quantity<Speed> speedKn = Quantities.getQuantity(1.0, KNOT);
+    Quantity<Speed> speedKn = knots(1.0);
     Quantity<Speed> speedKmH = speedKn.to(KILO(METRE).divide(HOUR).asType(Speed.class));
     
     System.out.println( speedKn + " = " + speedKmH);
@@ -101,8 +101,8 @@ public class NauticalUnitsTest {
     QuantityFormat format = QuantityFormat.getInstance();
    
     
-    Quantity<Speed> speedKn = format.parse("1 kn");
-    Quantity<Speed> speedKt = format.parse("1 kt");
+    Quantity<Speed> speedKn = format.parse("1 kn").asType(Speed.class);
+    Quantity<Speed> speedKt = format.parse("1 kt").asType(Speed.class);
     //Quantity<Speed> speedxx = format.parse("1 nm/h");
     
     System.out.println(speedKn + " = " + speedKt);
@@ -115,8 +115,8 @@ public class NauticalUnitsTest {
   public void test_KNOT_boatspeed_calc() {
     QuantityFormat format = QuantityFormat.getInstance();
     
-    Quantity<Speed> boatSpeed = format.parse("8 kn"); //Quantities.getQuantity(8., KNOT);
-    Quantity<Length> distance = format.parse("10 nm");
+    Quantity<Speed> boatSpeed = format.parse("8 kn").asType(Speed.class); //Quantities.getQuantity(8., KNOT);
+    Quantity<Length> distance = format.parse("10 nm").asType(Length.class);
     Quantity<Time> duration = distance.divide(boatSpeed).asType(Time.class).to(MINUTE);
     
     System.out.println("Boat Speed: " + boatSpeed);
@@ -128,7 +128,7 @@ public class NauticalUnitsTest {
   
   @Test
   public void test_ARC_DEGREE_to_RADIAN() {
-    Quantity<Angle> quart = Quantities.getQuantity(90., ARC_DEGREE);
+    Quantity<Angle> quart = degrees(90.);
     Quantity<Angle> radian = quart.to(RADIAN);
     
     System.out.println(quart + " = " + radian);
@@ -139,7 +139,7 @@ public class NauticalUnitsTest {
   
   @Test
   public void test_ARC_DEGREE_to_ARC_MINUTE() {
-    Quantity<Angle> degree = Quantities.getQuantity(1., ARC_DEGREE);
+    Quantity<Angle> degree = degrees(1.);
     Quantity<Angle> minute = degree.to(ARC_MINUTE);
     
     System.out.println(degree + " = " + minute);
@@ -150,7 +150,7 @@ public class NauticalUnitsTest {
   
   @Test
   public void test_ARC_MINUTE_to_ARC_SECOND() {
-    Quantity<Angle> minute = Quantities.getQuantity(1., ARC_MINUTE);
+    Quantity<Angle> minute = degrees(0., 1.);
     Quantity<Angle> second = minute.to(ARC_SECOND);
     
     System.out.println(minute + " = " + second);
@@ -163,9 +163,9 @@ public class NauticalUnitsTest {
   public void test_ARC_parsing() {
     QuantityFormat format = QuantityFormat.getInstance();
     
-    Quantity<Angle> degree = format.parse("53 °");
-    Quantity<Angle> minute = format.parse("33 '");
-    Quantity<Angle> second = format.parse("55 \"");
+    Quantity<Angle> degree = format.parse("53 °").asType(Angle.class);
+    Quantity<Angle> minute = format.parse("33 '").asType(Angle.class);
+    Quantity<Angle> second = format.parse("55 \"").asType(Angle.class);
     
     Quantity<Angle> position = degree.add(minute).add(second).to(ARC_DEGREE);
     

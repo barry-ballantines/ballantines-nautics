@@ -1,10 +1,12 @@
 package ballantines.nautics.units;
 
+import javax.measure.Quantity;
 import javax.measure.quantity.Length;
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Speed;
 import tec.units.ri.format.SimpleUnitFormat;
+import tec.units.ri.quantity.Quantities;
 
 import static tec.units.ri.unit.Units.*;
 
@@ -33,6 +35,26 @@ public class NauticalUnits {
     unitFormat.label(ARC_MINUTE, "'");
     unitFormat.label(ARC_SECOND, "\"");
     
+  }
+
+  public static Quantity<Length> nauticalMiles(double nm) {
+    return Quantities.getQuantity(nm, NAUTICAL_MILE);
+  }
+
+  public static Quantity<Speed> knots(double knots) {
+    return Quantities.getQuantity(knots, KNOT);
+  }
+
+  public static Quantity<Angle> degrees(double deg) {
+    return Quantities.getQuantity(deg, ARC_DEGREE);
+  }
+
+  public static Quantity<Angle> degrees(double deg, double min) {
+    return degrees(deg).add(Quantities.getQuantity(min, ARC_MINUTE));
+  }
+
+  public static Quantity<Angle> degrees(double deg, double min, double sec) {
+    return degrees(deg, min).add(Quantities.getQuantity(sec, ARC_SECOND));
   }
   
 }
