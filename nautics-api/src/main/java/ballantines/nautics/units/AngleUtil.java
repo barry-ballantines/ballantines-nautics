@@ -9,6 +9,7 @@ import javax.measure.Quantity;
 import javax.measure.Unit;
 import javax.measure.quantity.Angle;
 import tec.units.ri.quantity.Quantities;
+import tec.units.ri.unit.Units;
 
 /**
  *
@@ -124,5 +125,24 @@ public class AngleUtil {
    */
   public static Quantity<Angle>delta(Quantity<Angle> phi, Quantity<Angle> theta) {
     return normalizeToUpperBound(theta.subtract(phi), DEGREE_180);
+  }
+
+  // === Trigonomic functions: sin, cos, tan ===
+
+  public static double cos(Quantity<Angle> phi) {
+    return Math.cos(phi.to(Units.RADIAN).getValue().doubleValue());
+  }
+
+  public static double sin(Quantity<Angle> phi) {
+    return Math.sin(phi.to(Units.RADIAN).getValue().doubleValue());
+  }
+
+  public static double tan(Quantity<Angle> phi) {
+    return Math.tan(phi.to(Units.RADIAN).getValue().doubleValue());
+  }
+
+  public static Quantity<Angle> atan2(double numerator, double denominator) {
+    double sigma12 = Math.atan2(numerator, denominator);
+    return Quantities.getQuantity(sigma12, Units.RADIAN);
   }
 }
