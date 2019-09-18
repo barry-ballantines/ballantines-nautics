@@ -23,7 +23,7 @@ public class LatLon {
   
   
   public LatLon(double lat, double lon) {
-    this(Quantities.getQuantity(lat, NauticalUnits.ARC_DEGREE), Quantities.getQuantity(lat, NauticalUnits.ARC_DEGREE));
+    this(Quantities.getQuantity(lat, NauticalUnits.ARC_DEGREE), Quantities.getQuantity(lon, NauticalUnits.ARC_DEGREE));
   }
   
   public LatLon(Quantity<Angle> lat, Quantity<Angle> lon) {
@@ -57,7 +57,11 @@ public class LatLon {
       }
       
     }; 
-  } 
+  }
+
+  public String toString() {
+    return "(lat: " + lat + ", lon: " + lon + ")";
+  }
   
   public static LatLon fromStrings(String lat, String lon) {
     return new LatLon(
