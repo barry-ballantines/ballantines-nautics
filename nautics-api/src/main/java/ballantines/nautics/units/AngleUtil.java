@@ -80,7 +80,7 @@ public class AngleUtil {
   /**
    * Normalizes a degree value to an equivalent degree of range [lowerBound, lowerBound+360°[.
    * 
-   * @param degree
+   * @param angle
    * @param lowerBound
    * @return an angle of range [lowerBound, lowerBound+360°[.
    */
@@ -99,14 +99,14 @@ public class AngleUtil {
   /**
    * Normalizes a degree value to an equivalent degree of range ]upperBound-360°, upperBound].
    * 
-   * @param degree
+   * @param angle
    * @param upperBound
    * @return an angle of range ]upperValue-360°, upperValue].
    */
   public static Quantity<Angle> normalizeToUpperBound(Quantity<Angle> angle, Quantity<Angle> upperBound) {
     double angleDegrees = angle.to(NauticalUnits.ARC_DEGREE).getValue().doubleValue();
-    double lowerBoundDegrees = upperBound.to(NauticalUnits.ARC_DEGREE).getValue().doubleValue();
-    double resultDegrees = normalizeToUpperBound(angleDegrees, lowerBoundDegrees);
+    double upperBoundDegrees = upperBound.to(NauticalUnits.ARC_DEGREE).getValue().doubleValue();
+    double resultDegrees = normalizeToUpperBound(angleDegrees, upperBoundDegrees);
     if (resultDegrees == angleDegrees) { 
       return angle; // UNCHANGED
     }
