@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class LatitudeBoxFilterTest {
+public class LatLonBoxFilterTest {
 
   @Test
   public void test_atlantic() {
@@ -21,7 +21,7 @@ public class LatitudeBoxFilterTest {
     LatLon outsideWest = new LatLon( 12., -54.);
     LatLon outsideEast = new LatLon( -12., 52.);
 
-    LatitudeBoxFilter filter = new LatitudeBoxFilter(nw, se);
+    LatLonBoxFilter filter = new LatLonBoxFilter(nw, se);
 
     assertTrue("inside", filter.accept(leg(inside)));
     assertFalse("outside N", filter.accept(leg(outsideNorth)));
@@ -45,7 +45,7 @@ public class LatitudeBoxFilterTest {
     LatLon outsideWest = new LatLon( 12., 128.);
     LatLon outsideEast = new LatLon( -12., -128.);
 
-    LatitudeBoxFilter filter = new LatitudeBoxFilter(nw, se);
+    LatLonBoxFilter filter = new LatLonBoxFilter(nw, se);
 
     assertTrue("inside W", filter.accept(leg(insideWest)));
     assertTrue("inside E", filter.accept(leg(insideEast)));

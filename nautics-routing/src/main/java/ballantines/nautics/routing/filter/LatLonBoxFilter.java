@@ -5,11 +5,11 @@ import ballantines.nautics.units.LatLon;
 import ballantines.nautics.utils.LatLonBounds;
 
 
-public class LatitudeBoxFilter implements LegFilter {
+public class LatLonBoxFilter implements LegFilter {
 
   private LatLonBounds bounds;
 
-  public LatitudeBoxFilter(LatLon northWestCorner, LatLon southEastCorner) {
+  public LatLonBoxFilter(LatLon northWestCorner, LatLon southEastCorner) {
     this.bounds = new LatLonBounds(northWestCorner, southEastCorner);
   }
 
