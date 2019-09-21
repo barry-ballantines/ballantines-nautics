@@ -3,6 +3,7 @@ package ballantines.nautics.routing.polar;
 import ballantines.nautics.routing.polar.internal.SingleWindSpeedPolar;
 import ballantines.nautics.routing.polar.internal.InterpolatingWindSpeedInterval;
 import ballantines.nautics.routing.polar.internal.WindSpeedInterval;
+import ballantines.nautics.units.AngleUtil;
 import ballantines.nautics.units.NauticalUnits;
 import ballantines.nautics.units.PolarVector;
 import java.util.LinkedList;
@@ -102,7 +103,7 @@ public class DefaultPolar implements Polar {
     if (degrees>=0. && degrees<= 180.) {
       return twa;
     }
-    double normalizedDegrees = Math.abs(((degrees + 180.) % 360.)- 180.);
+    double normalizedDegrees =Math.abs(AngleUtil.normalizeToUpperBound(degrees, 180.));
     return Quantities.getQuantity(normalizedDegrees, ANGLE_UNIT).asType(Angle.class);
     
   }
