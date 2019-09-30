@@ -1,7 +1,5 @@
 package ballantines.nautics.routing;
 
-import ballantines.nautics.IsochronesRouting;
-import ballantines.nautics.Leg;
 import ballantines.nautics.routing.filter.LatLonBoxFilter;
 import ballantines.nautics.routing.polar.Polar;
 import ballantines.nautics.routing.polar.PolarParser;

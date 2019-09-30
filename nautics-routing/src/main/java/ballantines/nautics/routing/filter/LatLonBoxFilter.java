@@ -1,6 +1,6 @@
 package ballantines.nautics.routing.filter;
 
-import ballantines.nautics.Leg;
+import ballantines.nautics.routing.Leg;
 import ballantines.nautics.units.LatLon;
 import ballantines.nautics.utils.LatLonBounds;
 

@@ -5,7 +5,7 @@
  */
 package ballantines.nautics.routing.filter;
 
-import ballantines.nautics.Leg;
+import ballantines.nautics.routing.Leg;
 
 /**
  *

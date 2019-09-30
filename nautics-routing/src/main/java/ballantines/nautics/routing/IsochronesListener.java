@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package ballantines.nautics;
+package ballantines.nautics.routing;
 
 import java.util.Date;
 import java.util.List;
