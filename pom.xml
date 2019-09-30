@@ -15,6 +15,7 @@
   <modules>
     <module>nautics-api</module>
     <module>nautics-routing</module>
+    <module>nautics-grib</module>
   </modules>
   
   <dependencyManagement>
@@ -30,6 +31,12 @@
         <groupId>tec.units</groupId>
         <artifactId>unit-ri</artifactId>
         <version>1.0.3</version>
+      </dependency>
+
+      <dependency>
+        <groupId>edu.ucar</groupId>
+        <artifactId>grib</artifactId>
+        <version>8.0.29</version>
       </dependency>
       
       <dependency>

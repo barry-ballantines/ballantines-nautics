@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="nautics-api" />
         <module name="nautics-routing" />
+        <module name="nautics-grib" />
       </profile>
     </annotationProcessing>
   </component>
