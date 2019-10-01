@@ -80,9 +80,13 @@ public class Grib2Dumper {
         // create dump output here
         ps.println("--------------------------------------------------------------------");
         ps.println("                        Header : " + record.getHeader());
+        ps.println("- IS - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         printIS(is, ps);
+        ps.println("- ID - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         printID(id, ps);
+        ps.println("- GDS  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         printGDS(gds, ps);
+        ps.println("- PDS  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
         printPDS(is, pds, ps);
 
         if (displayData) {

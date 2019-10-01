@@ -1,10 +1,9 @@
-package ballantines.nautics.grib.test;
+package ballantines.nautics.grib2.test;
 
-import ballantines.nautics.grib.test.utils.ResourcesFileExportUtil;
+import ballantines.nautics.grib2.test.utils.ResourcesFileExportUtil;
 import com.noaa.grib.Grib2Decoder;
 
 import java.io.File;
-import java.io.IOException;
 
 public class Grib2DecoderMain {
 

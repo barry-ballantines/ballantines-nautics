@@ -1,6 +1,4 @@
-package ballantines.nautics.grib.test.utils;
-
-import com.sun.jndi.toolkit.url.Uri;
+package ballantines.nautics.grib2.test.utils;
 
 import java.io.*;
 import java.net.URI;
