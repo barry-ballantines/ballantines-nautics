@@ -1,7 +1,6 @@
 package ballantines.nautics.routing.filter;
 
 import ballantines.nautics.routing.Leg;
-import ballantines.nautics.units.LatLon;
 import ballantines.nautics.utils.LatLonBounds;
 
 
@@ -9,8 +8,8 @@ public class LatLonBoxFilter implements LegFilter {
 
   private LatLonBounds bounds;
 
-  public LatLonBoxFilter(LatLon northWestCorner, LatLon southEastCorner) {
-    this.bounds = new LatLonBounds(northWestCorner, southEastCorner);
+  public LatLonBoxFilter(LatLonBounds bounds) {
+    this.bounds = bounds;
   }
 
   @Override

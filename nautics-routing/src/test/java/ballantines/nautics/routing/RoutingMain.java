@@ -7,6 +7,7 @@ import ballantines.nautics.routing.wind.ConstantWindField;
 import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.NauticalUnits;
 import ballantines.nautics.units.PolarVector;
+import ballantines.nautics.utils.LatLonBounds;
 import tec.units.ri.format.QuantityFormat;
 import tec.units.ri.format.SimpleUnitFormat;
 
@@ -30,7 +31,9 @@ public class RoutingMain {
     IsochronesRouting routing = new IsochronesRouting();
     routing.setWindfield(new ConstantWindField(PolarVector.create(15, NauticalUnits.KNOT, 270, NauticalUnits.ARC_DEGREE)));
     routing.setPolar(polar);
-    routing.setLegFilter(new LatLonBoxFilter(new LatLon(degrees(45.), degrees(-80.)), new LatLon(degrees(15.0), degrees(-20.))));
+    LatLonBounds bounds = LatLonBounds.fromNorthWestToSouthEast(new LatLon(degrees(45.), degrees(-80.)), new LatLon(degrees(15.0), degrees(-20.)));
+    LatLonBoxFilter legFilter = new LatLonBoxFilter(bounds);
+    routing.setLegFilter(legFilter);
     routing.setStartingDate(Calendar.getInstance().getTime());
     routing.setStartingPoint(new LatLon(degrees(38.5), degrees(-28.7)));
     routing.setDestinationPoint(new LatLon(degrees(21.5), degrees(-71.1)));

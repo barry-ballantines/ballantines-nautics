@@ -2,6 +2,7 @@ package ballantines.nautics.routing.filter;
 
 import ballantines.nautics.routing.Leg;
 import ballantines.nautics.units.LatLon;
+import ballantines.nautics.utils.LatLonBounds;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -21,7 +22,7 @@ public class LatLonBoxFilterTest {
     LatLon outsideWest = new LatLon( 12., -54.);
     LatLon outsideEast = new LatLon( -12., 52.);
 
-    LatLonBoxFilter filter = new LatLonBoxFilter(nw, se);
+    LatLonBoxFilter filter = new LatLonBoxFilter(LatLonBounds.fromNorthWestToSouthEast(nw, se));
 
     assertTrue("inside", filter.accept(leg(inside)));
     assertFalse("outside N", filter.accept(leg(outsideNorth)));
@@ -45,7 +46,7 @@ public class LatLonBoxFilterTest {
     LatLon outsideWest = new LatLon( 12., 128.);
     LatLon outsideEast = new LatLon( -12., -128.);
 
-    LatLonBoxFilter filter = new LatLonBoxFilter(nw, se);
+    LatLonBoxFilter filter = new LatLonBoxFilter(LatLonBounds.fromNorthWestToSouthEast(nw, se));
 
     assertTrue("inside W", filter.accept(leg(insideWest)));
     assertTrue("inside E", filter.accept(leg(insideEast)));
