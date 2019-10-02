@@ -5,6 +5,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Angle;
 import tec.units.ri.unit.Units;
 
+import static ballantines.nautics.units.NauticalUnits.ARC_DEGREE;
 import static java.lang.Math.*;
 import java.util.Objects;
 import javax.measure.Unit;
@@ -19,7 +20,26 @@ public class PolarVector<T extends Quantity<T>> {
   public static <T extends Quantity<T>> PolarVector<T> create(double value, Unit<T> valueUnit, double angle, Unit<Angle> angleUnit) {
     return new PolarVector(Quantities.getQuantity(value, valueUnit), Quantities.getQuantity(angle, angleUnit));
   }
-  
+
+  /**
+   *
+   * @param xcoord - the distance in parallel direction from West to East
+   * @param ycoord - the distance in meridian direction from South to North
+   * @param <T>
+   * @return the polar vector
+   */
+  public static <T extends Quantity<T>> PolarVector<T> createFromCartesianCoordinates(Quantity<T> xcoord, Quantity<T> ycoord) {
+    Unit<T> unit = xcoord.getUnit();
+    ycoord = ycoord.to(unit); // make sure everything uses the same unit
+
+    double x = xcoord.getValue().doubleValue();
+    double y = ycoord.getValue().doubleValue();
+    double r = Math.sqrt(x*x + y*y);
+    double theta = Math.toDegrees(Math.atan2(x,y));
+
+    PolarVector<T> polar = create(r, unit, theta, ARC_DEGREE );
+    return polar;
+  }
   private Quantity<Angle> angle;
   private Quantity<T> radial;
   
@@ -123,9 +143,9 @@ public class PolarVector<T extends Quantity<T>> {
   }
   
   public PolarVector<T> reverse() {
-    double phi = getAngle(NauticalUnits.ARC_DEGREE);
+    double phi = getAngle(ARC_DEGREE);
     phi = (phi + 180.) % 360.;
-    return new PolarVector<T>(radial, Quantities.getQuantity(phi, NauticalUnits.ARC_DEGREE).to(angle.getUnit()));
+    return new PolarVector<T>(radial, Quantities.getQuantity(phi, ARC_DEGREE).to(angle.getUnit()));
   }
   
   protected PolarVector<T> createSameTypeAsThis(Quantity<T> value, Quantity<Angle> angle) {

@@ -100,5 +100,34 @@ public class PolarVectorTest {
     assertEquals(12., deadReckoning.getRadial().to(NAUTICAL_MILE).getValue().doubleValue(), 0.0);
   }
 
+  @Test
+  public void testCreateFromCartesian() {
+    out.println("PolarVector.createFromCartesianCoordinates()");
+
+    PolarVector<Speed> velocity = PolarVector.createFromCartesianCoordinates(knots(0.), knots(5.));
+    assertEquals(0., velocity.getAngle(ARC_DEGREE), 0.001);
+
+    velocity = PolarVector.createFromCartesianCoordinates(knots(5.), knots(5.));
+    assertEquals(45., velocity.getAngle(ARC_DEGREE), 0.001);
+
+    velocity = PolarVector.createFromCartesianCoordinates(knots(5.), knots(0.));
+    assertEquals(90., velocity.getAngle(ARC_DEGREE), 0.001);
+
+    velocity = PolarVector.createFromCartesianCoordinates(knots(5.), knots(-5.));
+    assertEquals(135., velocity.getAngle(ARC_DEGREE), 0.001);
+
+    velocity = PolarVector.createFromCartesianCoordinates(knots(0.), knots(-5.));
+    assertEquals(180., velocity.getAngle(ARC_DEGREE), 0.001);
+
+    velocity = PolarVector.createFromCartesianCoordinates(knots(-5.), knots(5.));
+    assertEquals(-45., velocity.getAngle(ARC_DEGREE), 0.001);
+
+    velocity = PolarVector.createFromCartesianCoordinates(knots(-5.), knots(0.));
+    assertEquals(-90., velocity.getAngle(ARC_DEGREE), 0.001);
+
+    velocity = PolarVector.createFromCartesianCoordinates(knots(-5.), knots(-5.));
+    assertEquals(-135., velocity.getAngle(ARC_DEGREE), 0.001);
+
+  }
   
 }
