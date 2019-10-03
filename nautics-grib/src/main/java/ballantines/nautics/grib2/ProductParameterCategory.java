@@ -12,11 +12,12 @@ public enum ProductParameterCategory {
 
   NOT_SUPPORTED(ProductDiscipline.NOT_SUPPORTED, -1);
 
+
   ProductParameterCategory(ProductDiscipline discipline, int id) {
     this.discipline = discipline;
     this.id = id;
-    discipline.registerCategory(this);
   }
+
 
   public int getId() {
     return id;
@@ -27,18 +28,14 @@ public enum ProductParameterCategory {
   }
 
   public ProductParameter getParameter(int id) {
-    for (ProductParameter para : parameters) {
-      if (id == para.getId()) return para;
+    for (ProductParameter parameter : ProductParameter.values()) {
+      if (this==parameter.getCategory() && id == parameter.getId()) {
+        return parameter;
+      }
     }
     return ProductParameter.NOT_SUPPORTED;
   }
 
-  void registerParameter(ProductParameter parameter) {
-    assert parameter.getCategory() == this;
-    parameters.add(parameter);
-  }
-
-  private Set<ProductParameter> parameters = new HashSet<>();
   private ProductDiscipline discipline;
   private int id;
 }

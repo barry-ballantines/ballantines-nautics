@@ -17,12 +17,10 @@ public enum ProductParameter {
 
   NOT_SUPPORTED(-1, ProductParameterCategory.NOT_SUPPORTED, null);
 
-
   private ProductParameter(int id, ProductParameterCategory category, Unit unit) {
     this.category = category;
     this.id = id;
     this.unit = unit;
-    category.registerParameter(this);
   }
 
   public int getId() {
