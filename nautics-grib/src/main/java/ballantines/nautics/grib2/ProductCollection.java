@@ -19,6 +19,14 @@ public class ProductCollection {
     }
   }
 
+  public boolean contains(ProductParameter... products) {
+    for (ProductParameter product : products) {
+      if (!map.containsKey(product)) return false;
+    }
+    return true;
+  }
+
+
   public void add(ProductDataGrid grid) {
     map.put(grid.getParameter(), grid);
   }

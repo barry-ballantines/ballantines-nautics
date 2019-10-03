@@ -23,9 +23,13 @@ public class TimeSeries<T> {
     return map.keySet().contains(time);
   }
 
-  public Optional<T> getClosest(Date time) {
-    if (time.before(map.firstKey()) || time.after(map.lastKey())) {
-      return Optional.empty();
+  public boolean isTimeInRange(Date time) {
+    return !time.before(map.firstKey()) && !time.after(map.lastKey());
+  }
+
+  public Date getClosestForecastTime(Date time) {
+    if (contains(time)) {
+      return time;
     }
     Date closestDate = map.firstKey();
     long smallestDelta = Math.abs(time.getTime() - closestDate.getTime());
@@ -37,6 +41,16 @@ public class TimeSeries<T> {
         smallestDelta = delta;
       }
     }
+    return closestDate;
+  }
+
+  public Optional<T> getClosest(Date time) {
+    if (isTimeInRange(time)) {
+      return Optional.empty();
+    }
+
+    Date closestDate = getClosestForecastTime(time);
+
     return get(closestDate);
   }
 

@@ -111,7 +111,7 @@ public class ProductDataGrid {
     return gridDefinitionSectionVars().getNy();
   }
 
-  public Quantity<?> getData(LatLon position) throws IOException {
+  public Quantity<?> getData(LatLon position) {
     int index = getDataIndex(position);
     float value = getRawData()[index];
     Unit<?> unit = getParameter().getUnit();
@@ -182,7 +182,7 @@ public class ProductDataGrid {
     return NauticalUnits.degrees(vars.getDy());
   }
 
-  public void loadData() throws IOException {
+  public void loadData() {
     this.rawdata = loadRawData();
   }
 
@@ -190,7 +190,7 @@ public class ProductDataGrid {
     this.rawdata = null;
   }
 
-  protected float[] getRawData() throws IOException {
+  protected float[] getRawData() {
     if (this.rawdata!=null) {
       return this.rawdata;
     } else {
@@ -198,8 +198,12 @@ public class ProductDataGrid {
     }
   }
 
-  protected float[] loadRawData() throws IOException {
-    return grib2Data.getData(record.getGdsOffset(), record.getPdsOffset(), identificationSection().getRefTime());
+  protected float[] loadRawData() {
+    try {
+      return grib2Data.getData(record.getGdsOffset(), record.getPdsOffset(), identificationSection().getRefTime());
+    } catch (IOException e) {
+      throw new RuntimeException("Invalid GRIB2 file: Failed to load raw data.", e);
+    }
   }
 
   protected ScanMode getScanMode() {
