@@ -23,6 +23,12 @@
       <artifactId>nautics-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>nautics-grib</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     
     <dependency>
       <artifactId>junit</artifactId>
