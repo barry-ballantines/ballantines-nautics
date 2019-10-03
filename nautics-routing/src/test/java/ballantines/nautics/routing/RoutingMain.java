@@ -1,6 +1,7 @@
 package ballantines.nautics.routing;
 
 import ballantines.nautics.grib2.util.ResourcesFileExportUtil;
+import ballantines.nautics.routing.export.GPXExport;
 import ballantines.nautics.routing.filter.LatLonBoxFilter;
 import ballantines.nautics.routing.polar.Polar;
 import ballantines.nautics.routing.polar.PolarParser;
@@ -13,10 +14,7 @@ import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.Units;
 
 import javax.measure.Quantity;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -54,18 +52,7 @@ public class RoutingMain {
 
     System.out.println("=== BEST ROUTE ===");
 
-
-    QuantityFormat format = QuantityFormat.getInstance();
-
-    for (Leg l : route) {
-      StringBuilder out = new StringBuilder();
-      out.append(l.time).append("\t");
-      format(out, l.bearing, "%.2f").append('\t');
-      format(out, l.distance, "%.2f").append("\t");
-      format(out, l.endpoint.getLatitude(), "%.4f" ).append("\t");
-      format(out, l.endpoint.getLongitude(), "%.4f").append("\t");
-      System.out.println(out);
-    }
+    GPXExport.export(leg).to(new PrintWriter(System.out));
   }
 
   private static WindField createWindField() throws IOException{
@@ -78,19 +65,6 @@ public class RoutingMain {
     PolarParser parser = new PolarParser();
     Polar polar = parser.parsePolar(polarFileReader);
     return polar;
-  }
-
-  private static StringBuilder format(StringBuilder out, Quantity quantity, String numberFormat) throws Exception {
-    if (quantity==null) {
-      return out.append("---");
-    }
-    out.append(String.format(numberFormat, quantity.getValue()));
-    if (!quantity.getUnit().isCompatible(ARC_DEGREE)) {
-      out.append(" ");
-    }
-    SimpleUnitFormat.getInstance().format(quantity.getUnit(), out);
-
-    return out;
   }
 
   public static class LoggingIsochronesListener implements IsochronesListener {
