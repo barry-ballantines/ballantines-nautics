@@ -282,6 +282,13 @@ public class IsochronesRouting {
   }
 
   /**
+   * @param period the time interval used for calculating the isochrones
+   */
+  public void setPeriod(Quantity<Time> period) {
+    this.period = period;
+  }
+
+  /**
    * @param windfield the windfield to set
    */
   public void setWindfield(WindField windfield) {
@@ -291,5 +298,8 @@ public class IsochronesRouting {
   public void setLegFilter(LegFilter legFilter) {
     this.legFilter = legFilter;
   }
-  
+
+  public void setIsochronesListener(IsochronesListener isochronesListener) {
+    this.isochronesListener = isochronesListener;
+  }
 }
