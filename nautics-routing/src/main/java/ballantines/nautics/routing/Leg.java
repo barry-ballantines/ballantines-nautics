@@ -37,6 +37,14 @@ public class Leg {
     return route;
   }
 
+  public int totalNumberOfLegs() {
+    return (parent==null) ? 1 : parent.totalNumberOfLegs() +1;
+  }
+
+  public Quantity<Length> totalDistance() {
+    return (parent==null) ? distance : parent.totalDistance().add(distance);
+  }
+
   private void addToRoute(List<Leg> route) {
     if (parent!=null) {
       parent.addToRoute(route);
