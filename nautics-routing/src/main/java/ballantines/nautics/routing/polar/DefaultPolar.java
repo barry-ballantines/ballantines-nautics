@@ -57,7 +57,11 @@ public class DefaultPolar implements Polar {
       return new PolarVector(boatSpeed, trueWindAngle);
     }
     else {
-      return null;
+      // wind is stronger as expected. take the last value available from the polar
+      WindSpeedInterval maxWindInterval = windSpeedIntervals.get(windSpeedIntervals.size() - 1);
+      Quantity<Speed> upperTWS = maxWindInterval.getUpperTWS();
+      Quantity<Speed> boatSpeed = maxWindInterval.getVelocity(upperTWS, normalizedTWA);
+      return new PolarVector(boatSpeed, trueWindAngle);
     }
   }
 

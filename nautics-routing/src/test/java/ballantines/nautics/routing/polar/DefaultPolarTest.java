@@ -121,6 +121,9 @@ public class DefaultPolarTest {
     // check angles out of [0,180]
     assertEquals(8.0, test.apply(15.0, 300.0), 0.0);
     assertEquals(8.0, test.apply(15.0, -60.0), 0.0);
+
+    // wind too big...
+    assertEquals(13.0, test.apply(20.5, 170.0), 0.0);
     
   }
   
