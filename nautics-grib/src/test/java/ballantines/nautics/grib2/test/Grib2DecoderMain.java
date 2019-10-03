@@ -1,6 +1,6 @@
 package ballantines.nautics.grib2.test;
 
-import ballantines.nautics.grib2.test.utils.ResourcesFileExportUtil;
+import ballantines.nautics.grib2.util.ResourcesFileExportUtil;
 import com.noaa.grib.Grib2Decoder;
 
 import java.io.File;

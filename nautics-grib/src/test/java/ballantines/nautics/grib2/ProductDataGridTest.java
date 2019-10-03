@@ -1,6 +1,6 @@
 package ballantines.nautics.grib2;
 
-import ballantines.nautics.grib2.test.utils.ResourcesFileExportUtil;
+import ballantines.nautics.grib2.util.ResourcesFileExportUtil;
 import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.NauticalUnits;
 import ballantines.nautics.units.PolarVector;

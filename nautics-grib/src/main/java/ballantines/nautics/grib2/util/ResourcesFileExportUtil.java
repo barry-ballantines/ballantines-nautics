@@ -1,4 +1,4 @@
-package ballantines.nautics.grib2.test.utils;
+package ballantines.nautics.grib2.util;
 
 import java.io.*;
 import java.net.URI;
