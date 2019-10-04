@@ -71,7 +71,7 @@ public class Grib2WindField implements WindField {
     loadProductData(time);
     Quantity<Speed> uWind = uWindComponentGrid.getData(position).asType(Speed.class).to(KNOT);
     Quantity<Speed> vWind = vWindComponentGrid.getData(position).asType(Speed.class).to(KNOT);
-    return PolarVector.createFromCartesianCoordinates(uWind, vWind);
+    return PolarVector.createFromCartesianCoordinates(uWind, vWind).reverse();
   }
 
   private void loadProductData(Date time) {
