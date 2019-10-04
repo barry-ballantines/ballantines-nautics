@@ -8,12 +8,9 @@ import ballantines.nautics.routing.polar.PolarParser;
 import ballantines.nautics.routing.wind.Grib2WindField;
 import ballantines.nautics.routing.wind.WindField;
 import ballantines.nautics.units.LatLon;
-import tec.units.ri.format.QuantityFormat;
-import tec.units.ri.format.SimpleUnitFormat;
 import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.Units;
 
-import javax.measure.Quantity;
 import java.io.*;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +42,7 @@ public class RoutingMain {
     routing.setStartingPoint(start);
     routing.setDestinationPoint(destination);
 
-    routing.setPeriod(Quantities.getQuantity(3.0, Units.HOUR));
+    routing.setPeriod(Quantities.getQuantity(1.5, Units.HOUR));
 
     Leg leg = routing.start();
     List<Leg> route = leg.getRoute();
@@ -53,6 +50,28 @@ public class RoutingMain {
     System.out.println("=== BEST ROUTE ===");
 
     GPXExport.export(leg).to(new PrintWriter(System.out));
+
+    File out = exportToFile(leg, "Sydney-Wellington.gpx");
+    System.out.println("Exported to file: " + out.getPath());
+
+  }
+
+  private static File exportToFile(Leg leg, String filename) throws IOException {
+    File exportFile = getGPXExportFile(filename);
+    FileOutputStream fos = new FileOutputStream(exportFile);
+    PrintWriter out = new PrintWriter(fos);
+    try {
+      GPXExport.export(leg).to(out);
+    } finally {
+      out.close();
+    }
+    return exportFile;
+  }
+
+  private static File getGPXExportFile(String filename) {
+    String tmp = System.getProperty("java.io.tmpdir");
+    File outputFile = new File(tmp, filename);
+    return outputFile;
   }
 
   private static WindField createWindField() throws IOException{
