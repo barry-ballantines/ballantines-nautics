@@ -6,10 +6,12 @@
 package ballantines.nautics.routing;
 
 import ballantines.nautics.units.LatLon;
+import ballantines.nautics.units.PolarVector;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Speed;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,6 +25,8 @@ public class Leg {
   public LatLon endpoint;
   public Quantity<Angle> bearing;
   public Quantity<Length> distance;
+  public PolarVector<Speed> wind;
+  public Quantity<Speed> boatSpeed;
   
   public Date time;
   

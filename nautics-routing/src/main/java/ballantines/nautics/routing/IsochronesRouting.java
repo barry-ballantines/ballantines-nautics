@@ -8,12 +8,10 @@ package ballantines.nautics.routing;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import ballantines.nautics.routing.filter.LegFilter;
@@ -72,18 +70,17 @@ public class IsochronesRouting {
     start.distanceFromStart = nauticalMiles(0.0);
     
     // START LOOPING...
-    
-    Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-    calendar.setTime(startingDate);
+
+    Date time = startingDate;
     List<Leg> isochrone = Collections.singletonList(start);
     Leg winningLeg = findWinningLegOrNull(isochrone);
     
     while (winningLeg==null && !isochrone.isEmpty()) {
-      calendar.add(Calendar.HOUR, period.to(HOUR).getValue().intValue());
-      isochrone = findNextIsochrone(isochrone, calendar.getTime());
+      time = addHours(time, period);
+      isochrone = findNextIsochrone(isochrone, time);
       
       if (isochronesListener!=null) {
-        isochronesListener.isochronesCalculated(calendar.getTime(), isochrone);
+        isochronesListener.isochronesCalculated(time, isochrone);
       }
       
       winningLeg = findWinningLegOrNull(isochrone);
@@ -130,6 +127,8 @@ public class IsochronesRouting {
       seg.distance = distance;
       seg.bearing = bearing;
       seg.endpoint = endpoint;
+      seg.wind = trueWind;
+      seg.boatSpeed = velocity.getRadial();
       
       newCandidates.add(seg);
     }
@@ -181,6 +180,8 @@ public class IsochronesRouting {
           bestLeg.distance = toDestination.getRadial();
           bestLeg.endpoint = destinationPoint;
           bestLeg.time = arrivalTime;
+          bestLeg.boatSpeed = boatSpeed.getRadial();
+          bestLeg.wind = trueWind;
         }
         else if (arrivalTime.before(bestLeg.time)) {
           // if the current arrival time is before the best legs arrival time, then we are faster.
@@ -189,6 +190,8 @@ public class IsochronesRouting {
           bestLeg.distance = toDestination.getRadial();
           bestLeg.endpoint = destinationPoint;
           bestLeg.time = arrivalTime;
+          bestLeg.boatSpeed = boatSpeed.getRadial();
+          bestLeg.wind = trueWind;
         }
       }
     }
