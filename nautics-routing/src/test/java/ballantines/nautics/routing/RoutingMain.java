@@ -80,7 +80,7 @@ public class RoutingMain {
   }
 
   private static Polar createPolar() throws IOException {
-    Reader polarFileReader = new InputStreamReader(RoutingMain.class.getResourceAsStream("/test/polar/Class40.pol"));
+    Reader polarFileReader = new InputStreamReader(RoutingMain.class.getResourceAsStream("/test/polar/50PerformanceCruiser.pol"));
     PolarParser parser = new PolarParser();
     Polar polar = parser.parsePolar(polarFileReader);
     return polar;
