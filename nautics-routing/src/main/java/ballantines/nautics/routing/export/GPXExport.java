@@ -7,29 +7,34 @@ import ballantines.nautics.units.NauticalUnits;
 import java.io.PrintWriter;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 import static ballantines.nautics.units.NauticalUnits.*;
 
-public class GPXExport {
+public abstract class GPXExport {
 
 
-  public static GPXExport export(Leg leg) {
-    return new GPXExport(leg);
+  public static RouteGPXExport export(Leg leg) {
+    return new RouteGPXExport(leg);
   }
 
-  private GPXExport(Leg leg) {
-    this.leg = leg;
+  public static IsochroneGPXExport exportIsochrones(List<Leg> isochrone) {
+    return new IsochroneGPXExport(isochrone);
+  }
+
+  private GPXExport() {
   }
 
   public void to(PrintWriter out) {
     printHeader(out);
-    printRoute(out);
+    printBody(out);
     printFooter(out);
     out.flush();
   }
 
-  private void printHeader(PrintWriter out) {
+  protected void printHeader(PrintWriter out) {
     out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     out.println("<gpx version=\"1.1\" creator=\"Ballantines Nautics Routing\"\n" +
                 "     xmlns=\"http://www.topografix.com/GPX/1/1\"\n" +
@@ -37,48 +42,124 @@ public class GPXExport {
                 "     xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">");
   }
 
-  private void printFooter(PrintWriter out) {
+  protected abstract void printBody(PrintWriter out);
+
+  protected void printFooter(PrintWriter out) {
     out.println("</gpx>");
   }
 
-  private void printRoute(PrintWriter out) {
+  protected void printRoute(PrintWriter out, List<Leg> route, String routeName) {
     out.println("  <rte>");
-    printLeg(out, this.leg);
+    if (routeName!=null) {
+      out.println("    <name>"+routeName+"</name>");
+    }
+    printWaypoints(out, route);
     out.println("  </rte>");
   }
 
-  private int printLeg(PrintWriter out, Leg leg) {
-    int index = 0;
-    if (leg.parent!=null) {
-      index = printLeg(out, leg.parent);
+
+  protected void printWaypoints(PrintWriter out, List<Leg> legs) {
+
+    for (int index=0; index<legs.size(); index++) {
+      String name = getWaypointName(legs, index);
+      printWaypoint(out, legs.get(index), name);
     }
+  }
+
+
+  protected void printWaypoint(PrintWriter out, Leg leg, String name) {
     Number lat = leg.endpoint.getLatitude().to(ARC_DEGREE).getValue();
     Number lon = leg.endpoint.getLongitude().to(ARC_DEGREE).getValue();
     String timestamp = leg.time.toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_INSTANT);
 
     out.println(String.format(Locale.US,"    <rtept lat=\"%.8f\" lon=\"%.8f\">", lat, lon));
-    out.println("      <name>" + index +"</name>");
+    if (name!=null) {
+      out.println("      <name>" + name + "</name>");
+    }
     out.println("      <time>" + timestamp + "</time>");
-    if (leg.bearing!=null || leg.distance!=null || leg.boatSpeed!=null || leg.wind!=null) {
+    String comment = getWaypointComment(leg);
+    if (comment!=null && comment.length()>0) {
       out.println("      <cmt>");
-      if (leg.bearing!=null) {
-        out.println(String.format(Locale.US, "          Bearing : %d°", leg.bearing.to(ARC_DEGREE).getValue().intValue()));
-      }
-      if (leg.distance!=null) {
-        out.println(String.format(Locale.US, "         Leg dist : %.1f nm", leg.distance.to(NAUTICAL_MILE).getValue().floatValue()));
-      }
-      if (leg.boatSpeed!=null) {
-        out.println(String.format(Locale.US, "       Boat speed : %.1f kn", leg.boatSpeed.to(KNOT).getValue().floatValue()));
-      }
-      if (leg.wind!=null) {
-        out.println(String.format(Locale.US, "             Wind : %.1f kn, %d°", leg.wind.getRadial().to(KNOT).getValue().floatValue(),
-                Math.round(AngleUtil.normalizeToLowerBound(leg.wind.getAngle().to(ARC_DEGREE).getValue().doubleValue(), 0.))));
-      }
+      out.println(comment);
       out.println("      </cmt>");
     }
     out.println("    </rtept>");
-    return index+1;
   }
 
-  private Leg leg;
+  protected String getWaypointComment(Leg leg) {
+   return null;
+  }
+
+  protected String getRouteName(List<Leg> route) {
+    return null;
+  }
+
+  protected String getWaypointName(List<Leg> legs, int index) {
+    return null;
+  }
+
+  // === IMPLEMENTATIONS ===
+
+  public static class IsochroneGPXExport extends GPXExport {
+    private IsochroneGPXExport(List<Leg> isochrone) {
+      this.isochrones = new LinkedList<>();
+      this.isochrones.add(isochrone);
+    }
+
+    public void and(List<Leg> isochrone) {
+      this.isochrones.add(isochrone);
+    }
+    @Override
+    protected void printBody(PrintWriter out) {
+      for (List<Leg> isochrone : isochrones) {
+        printRoute(out, isochrone, "Isochrone for time " + isochrone.get(0).time);
+      }
+    }
+
+    private List<List<Leg>> isochrones;
+  }
+
+  public static class RouteGPXExport extends GPXExport {
+
+    private RouteGPXExport(Leg leg) {
+      this.leg = leg;
+    }
+
+    @Override
+    protected void printBody(PrintWriter out) {
+      printRoute(out, leg.getRoute(), String.format("Route from %s to %s (%s)", leg.getStart(), leg.getDestination(), leg.totalDistance()));
+    }
+
+    @Override
+    protected String getWaypointName(List<Leg> legs, int index) {
+      return (index==0) ? "Start" : (index==legs.size()-1) ? "Destination" : "Wpt " + index;
+    }
+
+    @Override
+    protected String getWaypointComment(Leg leg) {
+      StringBuilder out = new StringBuilder();
+      if (leg.bearing!=null) {
+        out.append(String.format(Locale.US, "          Bearing : %d°", leg.bearing.to(ARC_DEGREE).getValue().intValue()));
+        out.append("\n");
+      }
+      if (leg.distance!=null) {
+        out.append(String.format(Locale.US, "         Leg dist : %.1f nm", leg.distance.to(NAUTICAL_MILE).getValue().floatValue()));
+        out.append("\n");
+      }
+      if (leg.boatSpeed!=null) {
+        out.append(String.format(Locale.US, "       Boat speed : %.1f kn", leg.boatSpeed.to(KNOT).getValue().floatValue()));
+        out.append("\n");
+      }
+      if (leg.wind!=null) {
+        out.append(String.format(Locale.US, "             Wind : %.1f kn, %d°", leg.wind.getRadial().to(KNOT).getValue().floatValue(),
+                Math.round(AngleUtil.normalizeToLowerBound(leg.wind.getAngle().to(ARC_DEGREE).getValue().doubleValue(), 0.))));
+        out.append("\n");
+      }
+      return out.toString();
+    }
+
+    private Leg leg;
+  }
+
+
 }

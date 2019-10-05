@@ -41,6 +41,17 @@ public class Leg {
     return route;
   }
 
+  public LatLon getStart() {
+    if (this.parent==null) {
+      return endpoint;
+    }
+    return this.parent.getStart();
+  }
+
+  public LatLon getDestination() {
+    return endpoint;
+  }
+
   public int totalNumberOfLegs() {
     return (parent==null) ? 1 : parent.totalNumberOfLegs() +1;
   }
