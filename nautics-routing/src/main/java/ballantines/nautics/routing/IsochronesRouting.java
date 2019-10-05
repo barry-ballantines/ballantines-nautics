@@ -42,10 +42,6 @@ import static tec.units.ri.unit.Units.SECOND;
  */
 public class IsochronesRouting {
   
-  private final static int METERS_PER_SM = 1852;
-  
-  //private final GeodeticCalculator calculator = new GeodeticCalculator();
-  
   private LatLon startingPoint;
   private LatLon destinationPoint;
   private Date   startingDate;
@@ -129,20 +125,14 @@ public class IsochronesRouting {
       seg.endpoint = endpoint;
       seg.wind = trueWind;
       seg.boatSpeed = velocity.getRadial();
-      
-      newCandidates.add(seg);
+
+      if (this.legFilter.accept(seg)) {
+        newCandidates.add(seg);
+      }
     }
-    newCandidates = filterCandidates(newCandidates);
     calculateBearingAndDistanceFromStart(newCandidates);
     candidates.addAll(newCandidates);
     
-  }
-  
-  private List<Leg> filterCandidates(List<Leg> candidates) {
-    if (this.legFilter!=null) {
-      return candidates.stream().filter(leg -> this.legFilter.accept(leg)).collect(Collectors.toList());
-    }
-    return candidates;
   }
   
   private void calculateBearingAndDistanceFromStart(List<Leg> candidates) {
@@ -202,7 +192,10 @@ public class IsochronesRouting {
     Map<Integer,Leg> map = new HashMap<>();
     
     candidates.stream().forEach(leg -> {
-      Integer key = leg.bearingFromStart.getValue().intValue();
+      Integer key = Math.round(leg.bearingFromStart.getValue().floatValue());
+      if (key==-180) {
+        key = 180; // close the circle
+      }
       Leg previous = map.get(key);
       if (previous==null ||
               leg.distanceFromStart.getValue().doubleValue() > previous.distanceFromStart.getValue().doubleValue()) {
