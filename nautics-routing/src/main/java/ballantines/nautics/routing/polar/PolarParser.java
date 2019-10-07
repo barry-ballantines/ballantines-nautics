@@ -2,9 +2,9 @@ package ballantines.nautics.routing.polar;
 
 import ballantines.nautics.routing.polar.internal.SingleWindSpeedPolar;
 import ballantines.nautics.units.PolarVector;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
+
+import java.io.*;
+
 import tec.units.ri.quantity.Quantities;
 
 /**
@@ -32,6 +32,11 @@ import tec.units.ri.quantity.Quantities;
  * @author mbuse
  */
 public class PolarParser {
+
+  public Polar parsePolar(File file) throws IOException {
+    FileReader reader = new FileReader(file);
+    return parsePolar(reader);
+  }
   
   public Polar parsePolar(Reader reader) throws IOException {
     BufferedReader bufferedReader = new BufferedReader(reader);
