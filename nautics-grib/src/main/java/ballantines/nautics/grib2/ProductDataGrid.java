@@ -1,5 +1,6 @@
 package ballantines.nautics.grib2;
 
+import ballantines.nautics.units.AngleUtil;
 import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.NauticalUnits;
 import ballantines.nautics.utils.LatLonBounds;
@@ -149,14 +150,17 @@ public class ProductDataGrid {
     XY indices = new XY(-1,-1);
     ScanMode scanMode = getScanMode();
 
+    Quantity<Angle> latitude = AngleUtil.normalizeToLowerBound(position.getLatitude(), bounds.getSouthLatitudeBound());
+    Quantity<Angle> longitude = AngleUtil.normalizeToLowerBound(position.getLongitude(), bounds.getWestLongitudeBound());
+
     Quantity<Angle> delta = scanMode.isWestToEast()
-            ? position.getLongitude().subtract(bounds.getWestLongitudeBound())
-            : bounds.getEastLongitudeBound().subtract(position.getLongitude());
+            ? longitude.subtract(bounds.getWestLongitudeBound())
+            : bounds.getEastLongitudeBound().subtract(longitude);
     indices.x = Math.round(delta.divide(getLongitudeIncrement()).getValue().floatValue());
 
     delta = scanMode.isNorthToSouth()
-            ? bounds.getNorthLatitudeBound().subtract(position.getLatitude())
-            : position.getLatitude().subtract(bounds.getSouthLatitudeBound());
+            ? bounds.getNorthLatitudeBound().subtract(latitude)
+            : latitude.subtract(bounds.getSouthLatitudeBound());
     indices.y = Math.round(delta.divide(getLatitudeIncrement()).getValue().floatValue());
 
     return indices;
