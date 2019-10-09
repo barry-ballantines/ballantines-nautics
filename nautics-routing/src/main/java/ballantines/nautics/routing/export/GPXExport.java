@@ -70,13 +70,16 @@ public abstract class GPXExport {
   protected void printWaypoint(PrintWriter out, Leg leg, String name) {
     Number lat = leg.endpoint.getLatitude().to(ARC_DEGREE).getValue();
     Number lon = leg.endpoint.getLongitude().to(ARC_DEGREE).getValue();
-    String timestamp = leg.time.toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_INSTANT);
+    String timestamp = (leg.time==null) ? null
+            : leg.time.toInstant().atZone(ZoneId.of("UTC")).format(DateTimeFormatter.ISO_INSTANT);
 
     out.println(String.format(Locale.US,"    <rtept lat=\"%.8f\" lon=\"%.8f\">", lat, lon));
     if (name!=null) {
       out.println("      <name>" + name + "</name>");
     }
-    out.println("      <time>" + timestamp + "</time>");
+    if (timestamp!=null) {
+      out.println("      <time>" + timestamp + "</time>");
+    }
     String comment = getWaypointComment(leg);
     if (comment!=null && comment.length()>0) {
       out.println("      <cmt>");
@@ -112,7 +115,9 @@ public abstract class GPXExport {
     @Override
     protected void printBody(PrintWriter out) {
       for (List<Leg> isochrone : isochrones) {
-        printRoute(out, isochrone, "Isochrone for time " + isochrone.get(0).time);
+        if (!isochrone.isEmpty()) {
+          printRoute(out, isochrone, "Isochrone for time " + isochrone.get(0).time);
+        }
       }
     }
 
