@@ -69,13 +69,15 @@ public class IsochronesRouting {
 
     Date time = startingDate;
     List<Leg> isochrone = Collections.singletonList(start);
+    List<Leg> lastIsochrone = null;
     Leg winningLeg = findWinningLegOrNull(isochrone);
     
     while (winningLeg==null && !isochrone.isEmpty()) {
       time = addHours(time, period);
+      lastIsochrone = isochrone;
       isochrone = findNextIsochrone(isochrone, time);
       
-      if (isochronesListener!=null) {
+      if (isochronesListener!=null && !isochrone.isEmpty()) {
         isochronesListener.isochronesCalculated(time, isochrone);
       }
       
@@ -87,7 +89,8 @@ public class IsochronesRouting {
         isochronesListener.winningLegFound(winningLeg);
       }
       else {
-        isochronesListener.noLegFound();
+        Leg bestLeg = findBestLeg(lastIsochrone);
+        isochronesListener.noLegFound(bestLeg);
       }
     }
     
@@ -142,7 +145,33 @@ public class IsochronesRouting {
       leg.distanceFromStart = vector.getRadial();
     }
   }
-  
+
+  private Leg findBestLeg(List<Leg> isochrones) {
+    Leg bestLeg = null;
+    double distance = Double.MAX_VALUE;
+
+    for (Leg leg : isochrones) {
+      PolarVector<Length> toDestination = geoid.calculateOrthodromicDistanceAndBearing(leg.endpoint, destinationPoint);
+      if (distance > toDestination.getRadial(NAUTICAL_MILE)) {
+        distance = toDestination.getRadial(NAUTICAL_MILE);
+        bestLeg = leg;
+      }
+    }
+
+    PolarVector<Length> toDestination = geoid.calculateOrthodromicDistanceAndBearing(bestLeg.endpoint, destinationPoint);
+
+    Leg finalLeg = new Leg();
+    finalLeg.endpoint = destinationPoint;
+    finalLeg.time = null;
+    finalLeg.wind = null;
+    finalLeg.boatSpeed = null;
+    finalLeg.distance = toDestination.getRadial();
+    finalLeg.bearing = toDestination.getAngle();
+    finalLeg.parent = bestLeg;
+
+    return finalLeg;
+  }
+
   private Leg findWinningLegOrNull(List<Leg> candidates) {
     Leg bestLeg = null;
     // for every candidate...

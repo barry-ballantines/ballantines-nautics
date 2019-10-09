@@ -21,6 +21,9 @@ import static ballantines.nautics.units.NauticalUnits.*;
 
 public class RoutingMain {
 
+  public static boolean exportIsochrones = true;
+  public static GPXExport.IsochroneGPXExport isochroneExport = null;
+
   public static void main(String... args) throws Exception {
     TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
@@ -42,7 +45,7 @@ public class RoutingMain {
     routing.setStartingPoint(start);
     routing.setDestinationPoint(destination);
 
-    routing.setPeriod(Quantities.getQuantity(1.5, Units.HOUR));
+    routing.setPeriod(Quantities.getQuantity(1.0, Units.HOUR));
 
     Leg leg = routing.start();
     List<Leg> route = leg.getRoute();
@@ -51,8 +54,20 @@ public class RoutingMain {
 
     GPXExport.export(leg).to(new PrintWriter(System.out));
 
-    File out = exportToFile(leg, "Sydney-Wellington.gpx");
-    System.out.println("Exported to file: " + out.getPath());
+    File routeFile = exportToFile(leg, "Sydney-Wellington.gpx");
+    System.out.println("Route exported to file: " + routeFile.getPath());
+
+    if (exportIsochrones) {
+      File isochronesFile = getGPXExportFile("Sydney-Wellington-Isochrones.gpx");
+      FileOutputStream fos = new FileOutputStream(isochronesFile);
+      PrintWriter out = new PrintWriter(fos);
+      try {
+        isochroneExport.to(out);
+      } finally {
+        out.close();
+      }
+      System.out.println("Isochrones exported to file: " + routeFile.getPath());
+    }
 
   }
 
@@ -85,8 +100,8 @@ public class RoutingMain {
     Polar polar = parser.parsePolar(polarFileReader);
     return polar;
   }
-
   public static class LoggingIsochronesListener implements IsochronesListener {
+
 
     @Override
     public void isochronesCalculated(Date date, List<Leg> isochrones) {
@@ -94,6 +109,15 @@ public class RoutingMain {
       System.out.println(" New Isochrone calculated");
       System.out.println("                     Time : " + date);
       System.out.println("     # of possible routes : " + isochrones.size());
+
+      if (RoutingMain.exportIsochrones) {
+        if (RoutingMain.isochroneExport==null) {
+          RoutingMain.isochroneExport = GPXExport.exportIsochrones(isochrones);
+        }
+        else {
+          RoutingMain.isochroneExport.and(isochrones);
+        }
+      }
     }
 
     @Override
@@ -107,10 +131,11 @@ public class RoutingMain {
     }
 
     @Override
-    public void noLegFound() {
+    public void noLegFound(Leg bestLeg) {
       System.out.println("===============================================================");
       System.out.println("   No Winning Leg Found");
       System.out.println("===============================================================");
     }
+
   }
 }

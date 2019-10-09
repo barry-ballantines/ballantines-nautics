@@ -18,5 +18,5 @@ public interface IsochronesListener {
    
    void winningLegFound(Leg winningLeg);
    
-   void noLegFound();
+   void noLegFound(Leg bestLeg);
 }
