@@ -16,6 +16,7 @@
     <module>nautics-api</module>
     <module>nautics-routing</module>
     <module>nautics-grib</module>
+    <module>nautics-routing-app</module>
   </modules>
   
   <dependencyManagement>
