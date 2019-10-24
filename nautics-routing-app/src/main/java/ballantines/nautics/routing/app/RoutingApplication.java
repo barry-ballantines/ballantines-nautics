@@ -147,7 +147,7 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
   public void noLegFound(Leg bestLeg) {
     System.out.println("=== FAIL - No winning rout found! ===");
     System.out.println(bestLeg.distance + " missing to destination.");
-    File bestLegFile = new File(routeExportFile.getParentFile(), "closest-" + routeExportFile.getName());
+    File bestLegFile = new File(routeExportFile.getParentFile(), routeExportFile.getName());
     exportAsGpx(GPXExport.export(bestLeg), bestLegFile);
     finish();
   }
