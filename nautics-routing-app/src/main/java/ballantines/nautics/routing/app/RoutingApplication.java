@@ -4,6 +4,7 @@ import ballantines.nautics.routing.IsochronesListener;
 import ballantines.nautics.routing.IsochronesRouting;
 import ballantines.nautics.routing.Leg;
 import ballantines.nautics.routing.export.GPXExport;
+import ballantines.nautics.routing.export.SailawayRouteExport;
 import ballantines.nautics.routing.filter.LatLonBoxFilter;
 import ballantines.nautics.routing.polar.PolarParser;
 import ballantines.nautics.routing.wind.Grib2WindField;
@@ -20,9 +21,6 @@ import tec.units.ri.quantity.Quantities;
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -57,6 +55,7 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
 
 	private File isochronesExportFile=null;
 	private File routeExportFile=null;
+	private File sailawayRouteFile = null;
 
 
 	@Override
@@ -82,6 +81,10 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
       isochronesExportFile = config.getExportIsochronesFile().orElseGet(readFile("Isochrones export file: ", false));
     }
 
+    if (config.exportSailawayRoute()) {
+      sailawayRouteFile = config.getSailawayExportRouteFile().orElseGet(readFile("Sailaway route export file: ", false));
+    }
+
     LocalDateTime startTime = config.getStartDate().orElseGet(
             () -> LocalDateTime.ofInstant(windfield.getForecastTimes().get(0).toInstant(), ZoneId.of("UTC")));
 
@@ -101,6 +104,7 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     System.out.println();
     System.out.println("Export route to        : " + routeExportFile);
     System.out.println("Export isochrones to   : " + isochronesExportFile);
+    System.out.println("Export sailaway to     : " + sailawayRouteFile);
     System.out.println("-----------------------------------------------------");
     System.out.println();
 
@@ -125,7 +129,7 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     System.out.println("New Isochrone: " + date);
     if (config.exportIsochrones()) {
       if (isochronesExport==null) {
-        isochronesExport = GPXExport.exportIsochrones(isochrones);
+        isochronesExport = GPXExport.from(isochrones);
       }
       else {
         isochronesExport.and(isochrones);
@@ -136,38 +140,38 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
   @Override
   public void winningLegFound(Leg winningLeg) {
     System.out.println("=== SUCCESS - Winning Leg found! ===");
-    if (config.exportRoute()) {
-      exportAsGpx(GPXExport.export(winningLeg), routeExportFile);
-      System.out.println("Route exported.");
-      finish();
-    }
+    exportRoute(winningLeg);
+    exportSailawayRoute(winningLeg);
+    exportIsochrones();
   }
 
   @Override
   public void noLegFound(Leg bestLeg) {
     System.out.println("=== FAIL - No winning rout found! ===");
     System.out.println(bestLeg.distance + " missing to destination.");
-    File bestLegFile = new File(routeExportFile.getParentFile(), routeExportFile.getName());
-    exportAsGpx(GPXExport.export(bestLeg), bestLegFile);
-    finish();
+    exportRoute(bestLeg);
+    exportSailawayRoute(bestLeg);
+    exportIsochrones();
   }
 
-  protected void finish() {
+  protected void exportRoute(Leg winningLeg) {
+    if (config.exportRoute()) {
+      GPXExport.from(winningLeg).to(routeExportFile);
+      System.out.println("Route exported.");
+    }
+  }
+
+  protected void exportIsochrones() {
     if (config.exportIsochrones()) {
-      exportAsGpx(isochronesExport, isochronesExportFile);
+      isochronesExport.to(isochronesExportFile);
       System.out.println("Isochrones exported.");
     }
   }
 
-  protected void exportAsGpx(GPXExport export, File outputFile) {
-
-    try (PrintWriter writer = new PrintWriter(outputFile, "UTF-8"))
-    {
-      export.to(writer);
-      writer.flush();
-    } catch(IOException ex) {
-      System.err.println("Failed to write to file: " + outputFile);
-      System.err.println(ex);
+  private void exportSailawayRoute(Leg leg) {
+	  if (config.exportSailawayRoute()) {
+      SailawayRouteExport.from(leg).to(sailawayRouteFile);
+      System.out.println("Sailaway route exported.");
     }
   }
 

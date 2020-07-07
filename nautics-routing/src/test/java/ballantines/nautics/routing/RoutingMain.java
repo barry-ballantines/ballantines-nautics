@@ -52,7 +52,7 @@ public class RoutingMain {
 
     System.out.println("=== BEST ROUTE ===");
 
-    GPXExport.export(leg).to(new PrintWriter(System.out));
+    GPXExport.from(leg).to(new PrintWriter(System.out));
 
     File routeFile = exportToFile(leg, "Sydney-Wellington.gpx");
     System.out.println("Route exported to file: " + routeFile.getPath());
@@ -76,7 +76,7 @@ public class RoutingMain {
     FileOutputStream fos = new FileOutputStream(exportFile);
     PrintWriter out = new PrintWriter(fos);
     try {
-      GPXExport.export(leg).to(out);
+      GPXExport.from(leg).to(out);
     } finally {
       out.close();
     }
@@ -112,7 +112,7 @@ public class RoutingMain {
 
       if (RoutingMain.exportIsochrones) {
         if (RoutingMain.isochroneExport==null) {
-          RoutingMain.isochroneExport = GPXExport.exportIsochrones(isochrones);
+          RoutingMain.isochroneExport = GPXExport.from(isochrones);
         }
         else {
           RoutingMain.isochroneExport.and(isochrones);

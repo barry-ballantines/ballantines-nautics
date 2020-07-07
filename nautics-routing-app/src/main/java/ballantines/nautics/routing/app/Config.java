@@ -49,6 +49,12 @@ public class Config {
   @Value("${routing.export.route.file:#{null}}")
   private File exportRouteFile;
 
+  @Value("${routing.export.sailaway.route:false}")
+  private boolean exportSailawayRoute;
+
+  @Value("${routing.export.sailaway.route.file:#{null}}")
+  private File exportSailawayRouteFile;
+
   @Value("${routing.legfilter.latitude.min:NaN}")
   private double legfilterLatitudeMin;
   @Value("${routing.legfilter.latitude.max:NaN}")
@@ -108,6 +114,14 @@ public class Config {
 
   public Optional<File> getExportRouteFile() {
     return Optional.ofNullable(exportRouteFile);
+  }
+
+  public boolean exportSailawayRoute() {
+    return exportSailawayRoute;
+  }
+
+  public Optional<File> getSailawayExportRouteFile() {
+    return Optional.ofNullable(exportSailawayRouteFile);
   }
 
   public Optional<LatLonBounds> getLegFilterBounds() {

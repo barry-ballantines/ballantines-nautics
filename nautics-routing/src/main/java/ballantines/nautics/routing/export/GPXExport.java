@@ -13,14 +13,14 @@ import java.util.Locale;
 
 import static ballantines.nautics.units.NauticalUnits.*;
 
-public abstract class GPXExport {
+public abstract class GPXExport implements Export {
 
 
-  public static RouteGPXExport export(Leg leg) {
+  public static RouteGPXExport from(Leg leg) {
     return new RouteGPXExport(leg);
   }
 
-  public static IsochroneGPXExport exportIsochrones(List<Leg> isochrone) {
+  public static IsochroneGPXExport from(List<Leg> isochrone) {
     return new IsochroneGPXExport(isochrone);
   }
 
