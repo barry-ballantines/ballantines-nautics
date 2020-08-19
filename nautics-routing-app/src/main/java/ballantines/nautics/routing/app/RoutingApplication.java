@@ -5,7 +5,9 @@ import ballantines.nautics.routing.IsochronesRouting;
 import ballantines.nautics.routing.Leg;
 import ballantines.nautics.routing.export.GPXExport;
 import ballantines.nautics.routing.export.SailawayRouteExport;
+import ballantines.nautics.routing.filter.CombinedLegFilter;
 import ballantines.nautics.routing.filter.LatLonBoxFilter;
+import ballantines.nautics.routing.filter.LegFilter;
 import ballantines.nautics.routing.polar.PolarParser;
 import ballantines.nautics.routing.wind.Grib2WindField;
 import ballantines.nautics.units.LatLon;
@@ -90,6 +92,7 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
 
     LatLonBounds bounds = config.getLegFilterBounds().orElseGet(()->windfield.getBounds());
 
+
     System.out.println("--- Configuration -----------------------------------");
     System.out.println("Start       : " + start);
     System.out.println("Start date  : " + startTime);
@@ -102,6 +105,13 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     System.out.println();
     System.out.println("Simulation period : " + simulationPeriod);
     System.out.println();
+    if (!config.getForbiddenAreas().isEmpty()) {
+      System.out.println("Forbidden areas:");
+      for (Bounds area : config.getForbiddenAreas() ) {
+        System.out.println(" - " + area);
+      }
+      System.out.println();
+    }
     System.out.println("Export route to        : " + routeExportFile);
     System.out.println("Export isochrones to   : " + isochronesExportFile);
     System.out.println("Export sailaway to     : " + sailawayRouteFile);
@@ -109,11 +119,20 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     System.out.println();
 
 
+    CombinedLegFilter legFilters = new CombinedLegFilter();
+    legFilters.add(new LatLonBoxFilter(bounds));
+
+    List<Bounds> noGoAreas = config.getForbiddenAreas();
+    noGoAreas.stream().forEach(b -> {
+      LatLonBoxFilter filter = new LatLonBoxFilter(b.toLatLonBounds());
+      legFilters.add(filter.inverse());
+    });
+
 		this.routing.setStartingPoint(start);
 		this.routing.setStartingDate(Date.from(startTime.atZone(ZoneId.of("UTC")).toInstant()));
 		this.routing.setDestinationPoint(destination);
 		this.routing.setPeriod(simulationPeriod);
-    this.routing.setLegFilter(new LatLonBoxFilter(bounds));
+    this.routing.setLegFilter(legFilters);
     this.routing.setWindfield(windfield);
     this.routing.setPolar(polarParser.parsePolar(polarFile));
 

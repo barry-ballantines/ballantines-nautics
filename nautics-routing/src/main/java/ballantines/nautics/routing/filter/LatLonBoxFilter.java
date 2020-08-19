@@ -16,4 +16,8 @@ public class LatLonBoxFilter implements LegFilter {
   public boolean accept(Leg leg) {
     return bounds.contains(leg.endpoint);
   }
+
+  public LegFilter inverse() {
+    return leg -> ! accept(leg);
+  }
 }

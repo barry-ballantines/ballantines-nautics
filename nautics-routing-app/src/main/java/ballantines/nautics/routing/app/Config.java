@@ -4,6 +4,8 @@ import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.LatLonFormat;
 import ballantines.nautics.utils.LatLonBounds;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.Units;
@@ -14,12 +16,15 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Double.isNaN;
 
-@Service
+@Configuration
+@ConfigurationProperties(prefix = "routing")
 public class Config {
 
   @Value("${routing.start.latlon:#{null}}")
@@ -67,6 +72,15 @@ public class Config {
   private double simulationPeriodHours;
 
 
+  private List<Bounds> forbiddenAreas = new ArrayList<>();
+
+  public List<Bounds> getForbiddenAreas() {
+    return forbiddenAreas;
+  }
+
+  public void setForbiddenAreas(List<Bounds> forbiddenAreas) {
+    this.forbiddenAreas = forbiddenAreas;
+  }
 
   public Optional<LatLon> getStart() {
     return parseLatLon(startLatLon);
