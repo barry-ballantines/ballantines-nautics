@@ -60,17 +60,18 @@ public class Config {
   @Value("${routing.export.sailaway.route.file:#{null}}")
   private File exportSailawayRouteFile;
 
-  @Value("${routing.legfilter.latitude.min:NaN}")
-  private double legfilterLatitudeMin;
-  @Value("${routing.legfilter.latitude.max:NaN}")
-  private double legfilterLatitudeMax;
-  @Value("${routing.legfilter.longitude.min:NaN}")
-  private double legfilterLongitudeMin;
-  @Value("${routing.legfilter.longitude.max:NaN}")
-  private double legfilterLongitudeMax;
   @Value("${routing.simulation.period.hours:3.0}")
   private double simulationPeriodHours;
 
+  private Bounds boundaryBox = null;
+
+  public Bounds getBoundaryBox() {
+    return boundaryBox;
+  }
+
+  public void setBoundaryBox(Bounds boundaryBox) {
+    this.boundaryBox = boundaryBox;
+  }
 
   private List<Bounds> forbiddenAreas = new ArrayList<>();
 
@@ -136,18 +137,6 @@ public class Config {
 
   public Optional<File> getSailawayExportRouteFile() {
     return Optional.ofNullable(exportSailawayRouteFile);
-  }
-
-  public Optional<LatLonBounds> getLegFilterBounds() {
-    if (isNaN(legfilterLatitudeMax) || isNaN(legfilterLatitudeMin) ||
-        isNaN(legfilterLongitudeMax) || isNaN(legfilterLongitudeMin)) {
-      return Optional.empty();
-    }
-    else {
-      return Optional.of(LatLonBounds.fromSouthWestToNorthEast(
-              new LatLon(legfilterLatitudeMin, legfilterLongitudeMax),
-              new LatLon(legfilterLatitudeMax, legfilterLongitudeMax)));
-    }
   }
 
   private Optional<LatLon> parseLatLon(String string) {

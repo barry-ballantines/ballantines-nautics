@@ -25,10 +25,7 @@ import javax.measure.quantity.Time;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static tec.units.ri.unit.Units.HOUR;
@@ -90,18 +87,18 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     LocalDateTime startTime = config.getStartDate().orElseGet(
             () -> LocalDateTime.ofInstant(windfield.getForecastTimes().get(0).toInstant(), ZoneId.of("UTC")));
 
-    LatLonBounds bounds = config.getLegFilterBounds().orElseGet(()->windfield.getBounds());
+    LatLonBounds boundaryBox = config.getBoundaryBox()!=null ? config.getBoundaryBox().toLatLonBounds() : windfield.getBounds();
 
 
     System.out.println("--- Configuration -----------------------------------");
-    System.out.println("Start       : " + start);
-    System.out.println("Start date  : " + startTime);
-    System.out.println("Destination : " + destination);
+    System.out.println("Start        : " + start);
+    System.out.println("Start date   : " + startTime);
+    System.out.println("Destination  : " + destination);
     System.out.println();
-		System.out.println("Bounds      : " + bounds);
+		System.out.println("Boundary Box : " + boundaryBox);
 		System.out.println();
-    System.out.println("Polar file  : " + polarFile);
-    System.out.println("GRIB2 file  : " + grib2File);
+    System.out.println("Polar file   : " + polarFile);
+    System.out.println("GRIB2 file   : " + grib2File);
     System.out.println();
     System.out.println("Simulation period : " + simulationPeriod);
     System.out.println();
@@ -120,7 +117,7 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
 
 
     CombinedLegFilter legFilters = new CombinedLegFilter();
-    legFilters.add(new LatLonBoxFilter(bounds));
+    legFilters.add(new LatLonBoxFilter(boundaryBox));
 
     List<Bounds> noGoAreas = config.getForbiddenAreas();
     noGoAreas.stream().forEach(b -> {
