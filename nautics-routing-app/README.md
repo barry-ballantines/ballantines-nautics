@@ -5,6 +5,16 @@ on the Optimized Isochrones Algorithm.
 
 See module "nautics-routing" for more information.
 
+ - [Starting the Routing Application](#starting-the-routing-application)
+ - [Application configuration](#application-configuration)
+   - [Start and destination start time and simulation interval](#start-and-destination-start-time-and-simulation-interval)
+   - [Meteological data and boat polars](#meteological-data-and-boat-polars)
+   - [Output](#output)
+   - [Boundary Box](#boundary-box)
+   - [Forbidden Areas](#forbidden-areas)
+ - [Location formats](#location-formats)
+ - [Time format and time zones](#time-format-and-time-zones)
+
 ## Starting the Routing Application
 
 Before you start the routing application, make sure that you successfully
@@ -28,7 +38,7 @@ Make sure that the ```application.properties``` file is located in your working 
 
 The routing parameters are configured in the file ```application.properties```.
 
-### Start and destination start time and simulation interval.
+### Start and destination start time and simulation interval
 
 The destination of the routing and the start point, e.g. the position of your boat, is configured by the following parameters:
 
