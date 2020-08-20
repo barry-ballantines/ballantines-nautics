@@ -118,23 +118,23 @@ Locations like the start and end point of your weather routing are defined in la
 
 Example: The starting position ```N 37° 29' 7.152" W 25° 21' 34.8984"``` should be specified in the following ways:
 
-   # DMS (degrees, minutes, seconds)
-   routing.start.latlon = N 37 29 7.152 W 25 21 34.8984
+    # DMS (degrees, minutes, seconds)
+    routing.start.latlon = N 37 29 7.152 W 25 21 34.8984
    
-   # DDM (degrees, decimal minutes)
-   routing.start.latlon = N 37 29.1192 W 25 21.58164
+    # DDM (degrees, decimal minutes)
+    routing.start.latlon = N 37 29.1192 W 25 21.58164
    
-   # DD (decimal degrees)
-   routing.start.latlon = N 37.485320  W 25.359694
-   routing.start.latlon = 37.485320 -25.359694
+    # DD (decimal degrees)
+    routing.start.latlon = N 37.485320  W 25.359694
+    routing.start.latlon = 37.485320 -25.359694
 
 For single latitudes and longitudes, like used in the definition of forbidden areas and boundary boxes, the same formates can be used.
 
-   routing.forbiddenAreas[1].name  =Long Island
-   routing.forbiddenAreas[1].north =N 45 00.000
-   routing.forbiddenAreas[1].south =N 40 40.000
-   routing.forbiddenAreas[1].east  =W 72 20.000
-   routing.forbiddenAreas[1].west  =W 73 50.000
+    routing.forbiddenAreas[1].name  =Long Island
+    routing.forbiddenAreas[1].north =N 45 00.000
+    routing.forbiddenAreas[1].south =N 40 40.000
+    routing.forbiddenAreas[1].east  =W 72 20.000
+    routing.forbiddenAreas[1].west  =W 73 50.000
    
 ## Time format and time zones
 
@@ -142,4 +142,4 @@ All times used in this program are UTC times.
 
 The time format is ```yyyy-mm-ddThh:mm:ss```. Example:
 
-   routing.start.date          =2020-08-20T12:25:00
+    routing.start.date          =2020-08-20T12:25:00
