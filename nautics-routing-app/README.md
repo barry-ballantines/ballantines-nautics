@@ -43,8 +43,8 @@ For information of the time and location formats please check out the following 
 
 The simulation period defines how far the calculated waypoints are away from each other. For most simulations a value of 3 hours is a good match. Smaller values create more waypoints, but also increase the computation time.
 
-   # Simulation period (= the time difference between isochrones)
-   routing.simulation.period.hours = 3.0
+    # Simulation period (= the time difference between isochrones)
+    routing.simulation.period.hours = 3.0
 
 ### Meteological data and boat polars
 
