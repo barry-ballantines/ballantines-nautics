@@ -32,13 +32,20 @@ public class SimpleGeoid implements Geoid {
     Quantity<Angle> lat1 = start.getLatitude();
     Quantity<Angle> lat2 = end.getLatitude();
     Quantity<Angle> lon12 = AngleUtil.delta(start.getLongitude(), end.getLongitude());
-    double numerator = cos(lat2) * sin(lon12);
-    double denominator = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon12);
+    double coslat2 = cos(lat2);
+    double coslat1 = cos(lat1);
+    double sinlon12 = sin(lon12);
+    double sinlat1 = sin(lat1);
+    double sinlat2 = sin(lat2);
+    double coslon12 = cos(lon12);
+
+    double numerator = coslat2 * sinlon12;
+    double denominator = coslat1 * sinlat2 - sinlat1 * coslat2 * coslon12;
     Quantity<Angle> bearing = atan2(numerator, denominator).to(ARC_DEGREE);
 
     // distance
     numerator = Math.sqrt(denominator * denominator + numerator * numerator);
-    denominator = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon12);
+    denominator = sinlat1 * sinlat2 + coslat1 * coslat2 * coslon12;
     Quantity<Angle> distAngle = atan2(numerator, denominator);
 
     Quantity<Length> distance = nauticalMiles(distAngle.to(ARC_MINUTE).getValue().doubleValue());
@@ -55,14 +62,23 @@ public class SimpleGeoid implements Geoid {
     Quantity<Angle> sigma12 = degrees(0., distance.to(NAUTICAL_MILE).getValue().doubleValue());
 
     // lon12 = difference destination.lon - start.lon
-    double numerator = sin(sigma12) * sin(bearing);
-    double denominator = cos(lat1) * cos(sigma12) - sin(lat1) * sin(sigma12) * cos(bearing);
+    double sinlat1 = sin(lat1);
+    double coslat1 = cos(lat1);
+    double sinsigma12 = sin(sigma12);
+    double cossigma12 = cos(sigma12);
+    double sinbearing = sin(bearing);
+    double cosbearing = cos(bearing);
+
+    double numerator = sinsigma12 * sinbearing;
+    double denominator = coslat1 * cossigma12 - sinlat1 * sinsigma12 * cosbearing;
+
     Quantity<Angle> lon12 = atan2(numerator, denominator).to(ARC_DEGREE);
     Quantity<Angle> lon2 = AngleUtil.normalizeToUpperBound(lon1.add(lon12), AngleUtil.DEGREE_180);
 
     // lat2 = latitude of endpoint
     denominator = Math.sqrt(denominator * denominator + numerator * numerator);
-    numerator = sin(lat1) * cos(sigma12) + cos(lat1) * sin(sigma12) * cos(bearing);
+    numerator = sinlat1 * cossigma12 + coslat1 * sinsigma12 * cosbearing;
+
     Quantity<Angle> lat2 = atan2(numerator, denominator).to(ARC_DEGREE);
     return new LatLon(lat2, lon2);
   }
