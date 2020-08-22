@@ -127,9 +127,12 @@ public class IsochronesRouting {
   
   private void calculateBearingAndDistanceFromStart(List<Leg> candidates) {
     for (Leg leg : candidates) {
-      PolarVector<Length> vector = this.geoid.calculateOrthodromicDistanceAndBearing(startingPoint, leg.endpoint);
-      leg.bearingFromStart = vector.getAngle();
-      leg.distanceFromStart = vector.getRadial();
+      PolarVector<Length> fromStart = this.geoid.calculateOrthodromicDistanceAndBearing(startingPoint, leg.endpoint);
+      PolarVector<Length> toDestination = this.geoid.calculateOrthodromicDistanceAndBearing(leg.endpoint, destinationPoint);
+      leg.bearingFromStart = fromStart.getAngle();
+      leg.bearingToDestination = toDestination.getAngle();
+      leg.distanceFromStart = fromStart.getRadial();
+      leg.distanceToDestination = toDestination.getRadial();
     }
   }
 
