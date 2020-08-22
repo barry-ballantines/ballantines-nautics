@@ -56,14 +56,8 @@ public class IsochronesRouting {
   // === METHODS ===
   
   public Leg start() {
-    Leg start = new Leg();
-    start.endpoint = startingPoint;
-    start.bearing = null;
-    start.distance = nauticalMiles(0.0);
-    start.parent = null;
-    start.time = startingDate;
-    start.bearingFromStart = null;
-    start.distanceFromStart = nauticalMiles(0.0);
+
+    Leg start = Leg.createStartingLeg(this.geoid, startingPoint, startingDate);
     
     // START LOOPING...
 
@@ -119,15 +113,8 @@ public class IsochronesRouting {
       Quantity<Length> distance = velocity.getRadial().multiply(period).asType(Length.class);
       
       LatLon endpoint = this.geoid.calculateDestination(reference.endpoint, bearing, distance);
-      
-      Leg seg = new Leg();
-      seg.parent = reference;
-      seg.time = time;
-      seg.distance = distance;
-      seg.bearing = bearing;
-      seg.endpoint = endpoint;
-      seg.wind = trueWind;
-      seg.boatSpeed = velocity.getRadial();
+
+      Leg seg = Leg.createChild(reference, time, distance, bearing, trueWind, velocity.getRadial());
 
       if (this.legFilter.accept(seg)) {
         newCandidates.add(seg);
