@@ -26,18 +26,24 @@ public class DivergingReduceStrategy implements ReduceStrategy {
     Map<Integer,Leg> map = new TreeMap<>();
 
     candidates.stream().forEach(leg -> {
-      Integer key = Math.round(leg.getVectorFromStart().getAngle().to(ARC_DEGREE).getValue().floatValue());
-      if (key==-180) {
-        key = 180; // close the circle
-      }
-      Leg previous = map.get(key);
+      Integer sector = getSector(leg);
+
+      Leg previous = map.get(sector);
       if (previous==null ||
               leg.getVectorFromStart().getRadial(NAUTICAL_MILE) > previous.getVectorFromStart().getRadial(NAUTICAL_MILE)) {
-        map.put(key, leg);
+        map.put(sector, leg);
       }
     });
 
     List<Leg> reduced = new LinkedList<>(map.values());
     return reduced;
+  }
+
+  private Integer getSector(Leg leg) {
+    Integer sector = Math.round(leg.getVectorFromStart().getAngle().to(ARC_DEGREE).getValue().floatValue());
+    if (sector==-180) {
+      sector = 180; // close the circle
+    }
+    return sector;
   }
 }
