@@ -9,6 +9,8 @@ import java.util.*;
 
 import ballantines.nautics.routing.filter.LegFilter;
 import ballantines.nautics.routing.polar.Polar;
+import ballantines.nautics.routing.reduce.DivergingReduceStrategy;
+import ballantines.nautics.routing.reduce.ReduceStrategy;
 import ballantines.nautics.routing.wind.WindField;
 import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.PolarVector;
@@ -35,6 +37,7 @@ public class IsochronesRouting {
 
   private RoutingContext context = new RoutingContext();
 
+  private ReduceStrategy reduceStrategy = new DivergingReduceStrategy();
   private Polar polar;
   private WindField windfield;
   private LegFilter legFilter;
@@ -86,7 +89,7 @@ public class IsochronesRouting {
     for (Leg ref : lastIsochrone) {
       calculateCandidates(ref, time, candidates);
     }
-    return reduceIsochrones(candidates);
+    return reduceStrategy.reduceCandidates(candidates);
   }
   
   private void calculateCandidates(Leg reference, Date time, List<Leg> candidates) {
@@ -182,25 +185,6 @@ public class IsochronesRouting {
       }
     }
     return bestLeg;
-  }
-  
-  private List<Leg> reduceIsochrones(List<Leg> candidates) {
-    Map<Integer,Leg> map = new TreeMap<>();
-    
-    candidates.stream().forEach(leg -> {
-      Integer key = Math.round(leg.getVectorFromStart().getAngle().to(ARC_DEGREE).getValue().floatValue());
-      if (key==-180) {
-        key = 180; // close the circle
-      }
-      Leg previous = map.get(key);
-      if (previous==null ||
-              leg.getVectorFromStart().getRadial(NAUTICAL_MILE) > previous.getVectorFromStart().getRadial(NAUTICAL_MILE)) {
-        map.put(key, leg);
-      }
-    });
-    
-    List<Leg> reduced = new LinkedList<>(map.values());
-    return reduced;
   }
   
   /**
