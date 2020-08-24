@@ -27,28 +27,26 @@ public class Leg {
 
   // Statics ...
 
-  public static Leg createStartingLeg(Geoid geoid, LatLon startingPosition, Date startingDate) {
+  public static Leg createStartingLeg(RoutingContext context) {
     Leg start = new Leg();
-    start.geoid = geoid;
-    start.endpoint = startingPosition;
+    start.context = context;
+    start.endpoint = context.getStartingPoint();
     start.bearing = null;
     start.distance = nauticalMiles(0.0);
     start.parent = null;
-    start.time = startingDate;
-    start.bearingFromStart = null;
-    start.distanceFromStart = nauticalMiles(0.0);
+    start.time = context.getStartingDate();
     return start;
   }
 
   public static Leg createChild(Leg parent, Date time, Quantity<Length> distance, Quantity<Angle> bearing, PolarVector<Speed> trueWind, Quantity<Speed> boatSpeed) {
     Leg seg = new Leg();
 
-    seg.geoid = parent.geoid;
+    seg.context = parent.context;
     seg.parent = parent;
     seg.time = time;
     seg.distance = distance;
     seg.bearing = bearing;
-    seg.endpoint = seg.geoid.calculateDestination(parent.endpoint, bearing, distance);
+    seg.endpoint = seg.context.getGeoid().calculateDestination(parent.endpoint, bearing, distance);
     seg.wind = trueWind;
     seg.boatSpeed = boatSpeed;
 
@@ -57,7 +55,6 @@ public class Leg {
 
   // Instance...
 
-  public Geoid geoid;
   public LatLon endpoint;
   public Quantity<Angle> bearing;
   public Quantity<Length> distance;
@@ -68,11 +65,10 @@ public class Leg {
   
   public Leg parent = null;
   
-  public Quantity<Length> distanceFromStart;
-  public Quantity<Angle> bearingFromStart;
 
-  public Quantity<Length> distanceToDestination;
-  public Quantity<Angle> bearingToDestination;
+  private RoutingContext context;
+  private PolarVector<Length> fromStart = null;
+  private PolarVector<Length> toDestination = null;
 
   public List<Leg> getRoute() {
     List<Leg> route = new LinkedList<Leg>();
@@ -104,5 +100,19 @@ public class Leg {
       parent.addToRoute(route);
     }
     route.add(this);
+  }
+
+  public PolarVector<Length> getVectorFromStart() {
+    if (fromStart==null) {
+      fromStart = context.getGeoid().calculateOrthodromicDistanceAndBearing(context.getStartingPoint(), endpoint);
+    }
+    return fromStart;
+  }
+
+  public PolarVector<Length> getVectorToDestination() {
+    if (toDestination==null) {
+      toDestination = context.getGeoid().calculateOrthodromicDistanceAndBearing(endpoint, context.getDestinationPoint());
+    }
+    return toDestination;
   }
 }

@@ -5,18 +5,9 @@
  */
 package ballantines.nautics.routing;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import ballantines.nautics.routing.filter.LegFilter;
-import ballantines.nautics.routing.geoid.Geoid;
-import ballantines.nautics.routing.geoid.SimpleGeoid;
 import ballantines.nautics.routing.polar.Polar;
 import ballantines.nautics.routing.wind.WindField;
 import ballantines.nautics.units.LatLon;
@@ -41,27 +32,25 @@ import static tec.units.ri.unit.Units.SECOND;
  * @author mbuse
  */
 public class IsochronesRouting {
-  
-  private LatLon startingPoint;
-  private LatLon destinationPoint;
-  private Date   startingDate;
+
+  private RoutingContext context = new RoutingContext();
+
   private Polar polar;
   private WindField windfield;
   private LegFilter legFilter;
   private Quantity<Time> period = Quantities.getQuantity(6.0, HOUR);
   private IsochronesListener isochronesListener;
 
-  private Geoid geoid = new SimpleGeoid();
   
   // === METHODS ===
   
   public Leg start() {
 
-    Leg start = Leg.createStartingLeg(this.geoid, startingPoint, startingDate);
+    Leg start = Leg.createStartingLeg(this.context);
     
     // START LOOPING...
 
-    Date time = startingDate;
+    Date time = context.getStartingDate();
     List<Leg> isochrone = Collections.singletonList(start);
     List<Leg> lastIsochrone = null;
     Leg winningLeg = findWinningLegOrNull(isochrone);
@@ -112,7 +101,7 @@ public class IsochronesRouting {
       PolarVector<Speed> velocity = polar.getVelocity(trueWind.getRadial(), twa(bearing, trueWind.getAngle())); // sm/h
       Quantity<Length> distance = velocity.getRadial().multiply(period).asType(Length.class);
       
-      LatLon endpoint = this.geoid.calculateDestination(reference.endpoint, bearing, distance);
+      LatLon endpoint = this.context.getGeoid().calculateDestination(reference.endpoint, bearing, distance);
 
       Leg seg = Leg.createChild(reference, time, distance, bearing, trueWind, velocity.getRadial());
 
@@ -120,38 +109,26 @@ public class IsochronesRouting {
         newCandidates.add(seg);
       }
     }
-    calculateBearingAndDistanceFromStart(newCandidates);
     candidates.addAll(newCandidates);
-    
   }
-  
-  private void calculateBearingAndDistanceFromStart(List<Leg> candidates) {
-    for (Leg leg : candidates) {
-      PolarVector<Length> fromStart = this.geoid.calculateOrthodromicDistanceAndBearing(startingPoint, leg.endpoint);
-      PolarVector<Length> toDestination = this.geoid.calculateOrthodromicDistanceAndBearing(leg.endpoint, destinationPoint);
-      leg.bearingFromStart = fromStart.getAngle();
-      leg.bearingToDestination = toDestination.getAngle();
-      leg.distanceFromStart = fromStart.getRadial();
-      leg.distanceToDestination = toDestination.getRadial();
-    }
-  }
+
 
   private Leg findBestLeg(List<Leg> isochrones) {
     Leg bestLeg = null;
     double distance = Double.MAX_VALUE;
 
     for (Leg leg : isochrones) {
-      PolarVector<Length> toDestination = geoid.calculateOrthodromicDistanceAndBearing(leg.endpoint, destinationPoint);
+      PolarVector<Length> toDestination = this.context.getGeoid().calculateOrthodromicDistanceAndBearing(leg.endpoint, context.getDestinationPoint());
       if (distance > toDestination.getRadial(NAUTICAL_MILE)) {
         distance = toDestination.getRadial(NAUTICAL_MILE);
         bestLeg = leg;
       }
     }
 
-    PolarVector<Length> toDestination = geoid.calculateOrthodromicDistanceAndBearing(bestLeg.endpoint, destinationPoint);
+    PolarVector<Length> toDestination = this.context.getGeoid().calculateOrthodromicDistanceAndBearing(bestLeg.endpoint, context.getDestinationPoint());
 
     Leg finalLeg = new Leg();
-    finalLeg.endpoint = destinationPoint;
+    finalLeg.endpoint = context.getDestinationPoint();
     finalLeg.time = null;
     finalLeg.wind = null;
     finalLeg.boatSpeed = null;
@@ -170,7 +147,7 @@ public class IsochronesRouting {
         continue; // NO WIND DATA...
       }
       // ... calculate the distance to the final destination...
-      PolarVector<Length> toDestination = geoid.calculateOrthodromicDistanceAndBearing(leg.endpoint, destinationPoint);
+      PolarVector<Length> toDestination = this.context.getGeoid().calculateOrthodromicDistanceAndBearing(leg.endpoint, context.getDestinationPoint());
       // ... and calculate the time to destination based on the currents positions wind and the boats polar.
       PolarVector<Speed> trueWind = windfield.getWind(leg.endpoint, leg.time);
       PolarVector<Speed> boatSpeed = polar.getVelocity(trueWind.getRadial(), twa(toDestination.getAngle(), trueWind.getAngle()));
@@ -187,7 +164,7 @@ public class IsochronesRouting {
           bestLeg.parent = leg;
           bestLeg.bearing = toDestination.getAngle();
           bestLeg.distance = toDestination.getRadial();
-          bestLeg.endpoint = destinationPoint;
+          bestLeg.endpoint = context.getDestinationPoint();
           bestLeg.time = arrivalTime;
           bestLeg.boatSpeed = boatSpeed.getRadial();
           bestLeg.wind = trueWind;
@@ -197,7 +174,7 @@ public class IsochronesRouting {
           bestLeg.parent = leg;
           bestLeg.bearing = toDestination.getAngle();
           bestLeg.distance = toDestination.getRadial();
-          bestLeg.endpoint = destinationPoint;
+          bestLeg.endpoint = context.getDestinationPoint();
           bestLeg.time = arrivalTime;
           bestLeg.boatSpeed = boatSpeed.getRadial();
           bestLeg.wind = trueWind;
@@ -208,22 +185,21 @@ public class IsochronesRouting {
   }
   
   private List<Leg> reduceIsochrones(List<Leg> candidates) {
-    Map<Integer,Leg> map = new HashMap<>();
+    Map<Integer,Leg> map = new TreeMap<>();
     
     candidates.stream().forEach(leg -> {
-      Integer key = Math.round(leg.bearingFromStart.getValue().floatValue());
+      Integer key = Math.round(leg.getVectorFromStart().getAngle().to(ARC_DEGREE).getValue().floatValue());
       if (key==-180) {
         key = 180; // close the circle
       }
       Leg previous = map.get(key);
       if (previous==null ||
-              leg.distanceFromStart.getValue().doubleValue() > previous.distanceFromStart.getValue().doubleValue()) {
+              leg.getVectorFromStart().getRadial(NAUTICAL_MILE) > previous.getVectorFromStart().getRadial(NAUTICAL_MILE)) {
         map.put(key, leg);
       }
     });
     
     List<Leg> reduced = new LinkedList<>(map.values());
-    reduced.sort((leg1, leg2) -> (Double.compare(leg1.bearingFromStart.getValue().doubleValue(), leg2.bearingFromStart.getValue().doubleValue())));
     return reduced;
   }
   
@@ -258,35 +234,35 @@ public class IsochronesRouting {
    * @param startingPoint the startingPoint to set
    */
   public void setStartingPoint(LatLon startingPoint) {
-    this.startingPoint = startingPoint;
+    this.context.setStartingPoint(startingPoint);
   }
 
   /**
    * @return the destinationPoint
    */
   public LatLon getDestinationPoint() {
-    return destinationPoint;
+    return context.getDestinationPoint();
   }
 
   /**
    * @param destinationPoint the destinationPoint to set
    */
   public void setDestinationPoint(LatLon destinationPoint) {
-    this.destinationPoint = destinationPoint;
+    context.setDestinationPoint(destinationPoint);
   }
 
   /**
    * @return the startingDate
    */
   public Date getStartingDate() {
-    return startingDate;
+    return context.getStartingDate();
   }
 
   /**
    * @param startingDate the startingDate to set
    */
   public void setStartingDate(Date startingDate) {
-    this.startingDate = startingDate;
+    this.context.setStartingDate(startingDate);
   }
 
   /**
