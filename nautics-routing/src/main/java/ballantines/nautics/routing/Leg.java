@@ -109,9 +109,9 @@ public class Leg {
     return fromStart;
   }
 
-  public PolarVector<Length> getVectorToDestination() {
+  public PolarVector<Length> getVectorFromDestination() {
     if (toDestination==null) {
-      toDestination = context.getGeoid().calculateOrthodromicDistanceAndBearing(endpoint, context.getDestinationPoint());
+      toDestination = context.getGeoid().calculateOrthodromicDistanceAndBearing(context.getDestinationPoint(), endpoint);
     }
     return toDestination;
   }

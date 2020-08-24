@@ -9,6 +9,7 @@ import java.util.*;
 
 import ballantines.nautics.routing.filter.LegFilter;
 import ballantines.nautics.routing.polar.Polar;
+import ballantines.nautics.routing.reduce.DivergingConvergingReduceStrategy;
 import ballantines.nautics.routing.reduce.DivergingReduceStrategy;
 import ballantines.nautics.routing.reduce.ReduceStrategy;
 import ballantines.nautics.routing.wind.WindField;
@@ -37,7 +38,9 @@ public class IsochronesRouting {
 
   private RoutingContext context = new RoutingContext();
 
-  private ReduceStrategy reduceStrategy = new DivergingReduceStrategy();
+  // private ReduceStrategy reduceStrategy = new DivergingReduceStrategy();
+  private ReduceStrategy reduceStrategy = new DivergingConvergingReduceStrategy();
+
   private Polar polar;
   private WindField windfield;
   private LegFilter legFilter;
@@ -49,6 +52,7 @@ public class IsochronesRouting {
   
   public Leg start() {
 
+    reduceStrategy.initialize(this.context);
     Leg start = Leg.createStartingLeg(this.context);
     
     // START LOOPING...
