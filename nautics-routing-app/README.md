@@ -5,6 +5,16 @@ on the Optimized Isochrones Algorithm.
 
 See module "nautics-routing" for more information.
 
+ - [Starting the Routing Application](#starting-the-routing-application)
+ - [Application configuration](#application-configuration)
+   - [Start and destination start time and simulation interval](#start-and-destination-start-time-and-simulation-interval)
+   - [Meteological data and boat polars](#meteological-data-and-boat-polars)
+   - [Output](#output)
+   - [Boundary Box](#boundary-box)
+   - [Forbidden Areas](#forbidden-areas)
+ - [Location formats](#location-formats)
+ - [Time format and time zones](#time-format-and-time-zones)
+
 ## Starting the Routing Application
 
 Before you start the routing application, make sure that you successfully
@@ -28,7 +38,7 @@ Make sure that the ```application.properties``` file is located in your working 
 
 The routing parameters are configured in the file ```application.properties```.
 
-### Start and destination start time and simulation interval.
+### Start and destination start time and simulation interval
 
 The destination of the routing and the start point, e.g. the position of your boat, is configured by the following parameters:
 
@@ -43,8 +53,8 @@ For information of the time and location formats please check out the following 
 
 The simulation period defines how far the calculated waypoints are away from each other. For most simulations a value of 3 hours is a good match. Smaller values create more waypoints, but also increase the computation time.
 
-   # Simulation period (= the time difference between isochrones)
-   routing.simulation.period.hours = 3.0
+    # Simulation period (= the time difference between isochrones)
+    routing.simulation.period.hours = 3.0
 
 ### Meteological data and boat polars
 
@@ -118,23 +128,23 @@ Locations like the start and end point of your weather routing are defined in la
 
 Example: The starting position ```N 37° 29' 7.152" W 25° 21' 34.8984"``` should be specified in the following ways:
 
-   # DMS (degrees, minutes, seconds)
-   routing.start.latlon = N 37 29 7.152 W 25 21 34.8984
+    # DMS (degrees, minutes, seconds)
+    routing.start.latlon = N 37 29 7.152 W 25 21 34.8984
    
-   # DDM (degrees, decimal minutes)
-   routing.start.latlon = N 37 29.1192 W 25 21.58164
+    # DDM (degrees, decimal minutes)
+    routing.start.latlon = N 37 29.1192 W 25 21.58164
    
-   # DD (decimal degrees)
-   routing.start.latlon = N 37.485320  W 25.359694
-   routing.start.latlon = 37.485320 -25.359694
+    # DD (decimal degrees)
+    routing.start.latlon = N 37.485320  W 25.359694
+    routing.start.latlon = 37.485320 -25.359694
 
 For single latitudes and longitudes, like used in the definition of forbidden areas and boundary boxes, the same formates can be used.
 
-   routing.forbiddenAreas[1].name  =Long Island
-   routing.forbiddenAreas[1].north =N 45 00.000
-   routing.forbiddenAreas[1].south =N 40 40.000
-   routing.forbiddenAreas[1].east  =W 72 20.000
-   routing.forbiddenAreas[1].west  =W 73 50.000
+    routing.forbiddenAreas[1].name  =Long Island
+    routing.forbiddenAreas[1].north =N 45 00.000
+    routing.forbiddenAreas[1].south =N 40 40.000
+    routing.forbiddenAreas[1].east  =W 72 20.000
+    routing.forbiddenAreas[1].west  =W 73 50.000
    
 ## Time format and time zones
 
@@ -142,4 +152,4 @@ All times used in this program are UTC times.
 
 The time format is ```yyyy-mm-ddThh:mm:ss```. Example:
 
-   routing.start.date          =2020-08-20T12:25:00
+    routing.start.date          =2020-08-20T12:25:00
