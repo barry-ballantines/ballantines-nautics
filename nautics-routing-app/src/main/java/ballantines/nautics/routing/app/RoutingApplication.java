@@ -12,6 +12,7 @@ import ballantines.nautics.routing.polar.PolarParser;
 import ballantines.nautics.routing.wind.Grib2WindField;
 import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.LatLonFormat;
+import ballantines.nautics.units.NauticalUnits;
 import ballantines.nautics.utils.LatLonBounds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
@@ -156,6 +157,9 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
   @Override
   public void winningLegFound(Leg winningLeg) {
     System.out.println("=== SUCCESS - Winning Leg found! ===");
+    System.out.println("");
+    System.out.printf(Locale.US, "ETA:      %s\n", LocalDateTime.ofInstant(winningLeg.time.toInstant(), ZoneId.of("UTC")));
+    System.out.printf(Locale.US, "Distance: %5.1f nm \n", winningLeg.totalDistance().to(NauticalUnits.NAUTICAL_MILE).getValue());
     exportRoute(winningLeg);
     exportSailawayRoute(winningLeg);
     exportIsochrones();

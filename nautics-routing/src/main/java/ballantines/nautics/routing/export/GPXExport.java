@@ -2,7 +2,6 @@ package ballantines.nautics.routing.export;
 
 import ballantines.nautics.routing.Leg;
 import ballantines.nautics.units.AngleUtil;
-import ballantines.nautics.units.NauticalUnits;
 
 import java.io.PrintWriter;
 import java.time.ZoneId;
@@ -112,6 +111,7 @@ public abstract class GPXExport implements Export {
     public void and(List<Leg> isochrone) {
       this.isochrones.add(isochrone);
     }
+
     @Override
     protected void printBody(PrintWriter out) {
       for (List<Leg> isochrone : isochrones) {
@@ -119,6 +119,21 @@ public abstract class GPXExport implements Export {
           printRoute(out, isochrone, "Isochrone for time " + isochrone.get(0).time);
         }
       }
+    }
+
+    @Override
+    protected String getWaypointName(List<Leg> legs, int index) {
+      return "" + index;
+    }
+
+    @Override
+    protected String getWaypointComment(Leg leg) {
+      StringBuilder out = new StringBuilder();
+      out.append(String.format(Locale.US, "          Bearing from start        : % 4.1f°  %n", leg.getVectorFromStart().getAngle(ARC_DEGREE)));
+      out.append(String.format(Locale.US, "          Bearing from destination  : % 4.1f°  %n", leg.getVectorFromDestination().getAngle(ARC_DEGREE)));
+      out.append(String.format(Locale.US, "          Distance from start       : %5.1f nm %n", leg.getVectorFromStart().getRadial(NAUTICAL_MILE)));
+      out.append(String.format(Locale.US, "          Distance from destination : %5.1f nm %n", leg.getVectorFromDestination().getRadial(NAUTICAL_MILE)));
+      return out.toString();
     }
 
     private List<List<Leg>> isochrones;
