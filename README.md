@@ -17,6 +17,6 @@ This repository contains APIs and Tools that are around sailing.
  
  ## Starting Weather Routing
  
- Go to the sub module [nautics-routing-app][nautics-routing-app]) to find more information about the routing application, the prerequisites and the configuration.
+ Go to the sub module [nautics-routing-app][nautics-routing-app] to find more information about the routing application, the prerequisites and the configuration.
 
 [nautics-routing-app]: nautics-routing-app
