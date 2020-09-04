@@ -122,6 +122,20 @@ To avoid these useless routes, Barry's Routing Application supports the definiti
 
 For performance reasons you should keep the amount of forbidden areas small. It is recommended to start without forbidden areas first and only add them, if needed.
 
+## Borders
+
+Some areas of the world cannot be modeled by "forbidden areas". Therefore the routing also supports borders. A border is a line of waypoints that must not be crossed by the calculated course. 
+
+There can be more than one border in the ```application.properties``` file. Every border has a name and a list of waypoints. The indices for borders and waypoints needs to be consecutive numbers, starting at 0:
+
+    routing.borders[0].name = Coast line Long Island
+    routing.borders[0].locations[0] = N 40 34 03  W 74 00 28
+    routing.borders[0].locations[1] = N 40 32 20  W 73 56 25
+    routing.borders[0].locations[2] = N 40 37 14  W 73 12 06
+    routing.borders[0].locations[3] = N 40 48 44  W 72 32 18
+    routing.borders[0].locations[4] = N 41 03 26  W 71 50 07
+    routing.borders[0].locations[5] = N 41 19 00  W 71 48 18
+
 ## Location formats
 
 Locations like the start and end point of your weather routing are defined in latitudes and longitudes. The configuration of the routing app supports a variaty of formats. In order to avoid encoding problems it is recommended not to use special characters like ° or ' or ".
