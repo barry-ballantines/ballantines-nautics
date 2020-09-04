@@ -107,7 +107,7 @@ The routing application can only simulate routes within an area that is covered 
 
 The routing algorithm does not know anything about landmasses and coastlines. This is because checking if a calculated waypoint is on water or on land is a non-trivial and also very time-consuming process. Therefore, it might happen that the calculated route leads you over land.
 
-To avoid these useless routes, Barry's Routing Application supports the definition of "forbidden areas", which are boundary boxes that should not be entered by the algorithm. You can define as many forbidden areas as you like in an array-like style. Make sure that the indices are consecutive numbers, starting at 0:
+To avoid these useless routes, Barry's Routing Application supports the definition of "forbidden areas", which are boundary boxes that should not be entered by the algorithm. You can define as many forbidden areas as you like in an array-like style. Every forbidden area can also be disabled by setting the property ```enabled``` to ```false```. Make sure that the indices are consecutive numbers, starting at 0:
 
     routing.forbiddenAreas[0].name  =Newfoundland
     routing.forbiddenAreas[0].north =N 52
@@ -116,6 +116,7 @@ To avoid these useless routes, Barry's Routing Application supports the definiti
     routing.forbiddenAreas[0].west  =W 70
     
     routing.forbiddenAreas[1].name  =Long Island
+    routing.forbiddenAreas[1].enabled = false
     routing.forbiddenAreas[1].north =N 45 00.000
     routing.forbiddenAreas[1].south =N 40 40.000
     routing.forbiddenAreas[1].east  =W 72 20.000
@@ -127,9 +128,10 @@ For performance reasons you should keep the amount of forbidden areas small. It 
 
 Some areas of the world cannot be modeled by "forbidden areas". Therefore the routing also supports borders. A border is a line of waypoints that must not be crossed by the calculated course. 
 
-There can be more than one border in the ```application.properties``` file. Every border has a name and a list of waypoints. The indices for borders and waypoints needs to be consecutive numbers, starting at 0:
+There can be more than one border in the ```application.properties``` file. Every border has a name and a list of waypoints. Like forbidden areas, borders can also be enabled or disabled. The indices for borders and waypoints needs to be consecutive numbers, starting at 0:
 
     routing.borders[0].name = Coast line Long Island
+    routing.borders[0].enabled = false
     routing.borders[0].locations[0] = N 40 34 03  W 74 00 28
     routing.borders[0].locations[1] = N 40 32 20  W 73 56 25
     routing.borders[0].locations[2] = N 40 37 14  W 73 12 06
