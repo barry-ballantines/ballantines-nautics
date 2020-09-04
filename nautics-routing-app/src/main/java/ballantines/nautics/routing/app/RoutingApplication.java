@@ -6,6 +6,7 @@ import ballantines.nautics.routing.Leg;
 import ballantines.nautics.routing.export.GPXExport;
 import ballantines.nautics.routing.export.SailawayRouteExport;
 import ballantines.nautics.routing.filter.CombinedLegFilter;
+import ballantines.nautics.routing.filter.CrossingBorderLegFilter;
 import ballantines.nautics.routing.filter.LatLonBoxFilter;
 import ballantines.nautics.routing.filter.LegFilter;
 import ballantines.nautics.routing.polar.PolarParser;
@@ -110,6 +111,16 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
       }
       System.out.println();
     }
+    if (!config.getBorders().isEmpty()) {
+      System.out.println("Borders:");
+      for (Border border : config.getBorders()) {
+        System.out.printf(" - name: %s %n", border.getName());
+        System.out.printf("   locations: %n");
+        for (String loc:border.getLocations()) {
+          System.out.printf("              %s %n", loc);
+        }
+      }
+    }
     System.out.println("Export route to        : " + routeExportFile);
     System.out.println("Export isochrones to   : " + isochronesExportFile);
     System.out.println("Export sailaway to     : " + sailawayRouteFile);
@@ -124,6 +135,13 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     noGoAreas.stream().forEach(b -> {
       LatLonBoxFilter filter = new LatLonBoxFilter(b.toLatLonBounds());
       legFilters.add(filter.inverse());
+    });
+
+    List<Border> borders = config.getBorders();
+    borders.stream().forEach(b -> {
+      CrossingBorderLegFilter filter = new CrossingBorderLegFilter();
+      filter.setBorder(b.getLatLons());
+      legFilters.add(filter);
     });
 
 		this.routing.setStartingPoint(start);

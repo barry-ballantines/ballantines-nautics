@@ -83,6 +83,16 @@ public class Config {
     this.forbiddenAreas = forbiddenAreas;
   }
 
+  private List<Border> borders = new ArrayList<>();
+
+  public List<Border> getBorders() {
+    return borders;
+  }
+
+  public void setBorders(List<Border> borders) {
+    this.borders = borders;
+  }
+
   public Optional<LatLon> getStart() {
     return parseLatLon(startLatLon);
   }
