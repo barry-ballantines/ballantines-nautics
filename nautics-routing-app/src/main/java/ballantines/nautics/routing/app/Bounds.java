@@ -13,6 +13,7 @@ import static ballantines.nautics.units.NauticalUnits.ARC_DEGREE;
 public class Bounds {
 
   private String name = "N/A";
+  private boolean enabled = true;
   private String north;
   private String south;
   private String east;
@@ -24,6 +25,14 @@ public class Bounds {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 
   public String getNorth() {

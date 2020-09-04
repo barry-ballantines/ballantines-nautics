@@ -107,17 +107,21 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     if (!config.getForbiddenAreas().isEmpty()) {
       System.out.println("Forbidden areas:");
       for (Bounds area : config.getForbiddenAreas() ) {
-        System.out.println(" - " + area);
+        if (area.isEnabled()) {
+          System.out.println(" - " + area);
+        }
       }
       System.out.println();
     }
     if (!config.getBorders().isEmpty()) {
       System.out.println("Borders:");
       for (Border border : config.getBorders()) {
-        System.out.printf(" - name: %s %n", border.getName());
-        System.out.printf("   locations: %n");
-        for (String loc:border.getLocations()) {
-          System.out.printf("              %s %n", loc);
+        if (border.isEnabled()) {
+          System.out.printf(" - name: %s %n", border.getName());
+          System.out.printf("   locations: %n");
+          for (String loc : border.getLocations()) {
+            System.out.printf("              %s %n", loc);
+          }
         }
       }
     }
@@ -132,13 +136,13 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     legFilters.add(new LatLonBoxFilter(boundaryBox));
 
     List<Bounds> noGoAreas = config.getForbiddenAreas();
-    noGoAreas.stream().forEach(b -> {
-      LatLonBoxFilter filter = new LatLonBoxFilter(b.toLatLonBounds());
-      legFilters.add(filter.inverse());
+    noGoAreas.stream().filter(b -> b.isEnabled()).forEach(b -> {
+        LatLonBoxFilter filter = new LatLonBoxFilter(b.toLatLonBounds());
+        legFilters.add(filter.inverse());
     });
 
     List<Border> borders = config.getBorders();
-    borders.stream().forEach(b -> {
+    borders.stream().filter(b -> b.isEnabled()).forEach(b -> {
       CrossingBorderLegFilter filter = new CrossingBorderLegFilter();
       filter.setBorder(b.getLatLons());
       legFilters.add(filter);

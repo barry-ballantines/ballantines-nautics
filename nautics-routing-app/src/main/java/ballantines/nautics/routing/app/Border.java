@@ -5,8 +5,6 @@ import ballantines.nautics.units.LatLonFormat;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +12,7 @@ import java.util.stream.Stream;
 @Configuration
 public class Border {
   private String name = "N/A";
+  private boolean enabled = true;
   private List<String> locations = new ArrayList<>();
 
 
@@ -31,6 +30,14 @@ public class Border {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
   }
 
   public List<LatLon> getLatLons() {
