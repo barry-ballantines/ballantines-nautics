@@ -12,6 +12,7 @@ See module "nautics-routing" for more information.
    - [Output](#output)
    - [Boundary Box](#boundary-box)
    - [Forbidden Areas](#forbidden-areas)
+   - [Borders](#borders)
  - [Location formats](#location-formats)
  - [Time format and time zones](#time-format-and-time-zones)
 
@@ -135,6 +136,8 @@ There can be more than one border in the ```application.properties``` file. Ever
     routing.borders[0].locations[3] = N 40 48 44  W 72 32 18
     routing.borders[0].locations[4] = N 41 03 26  W 71 50 07
     routing.borders[0].locations[5] = N 41 19 00  W 71 48 18
+    
+For performance reasons you should keep the amount of borders small.
 
 ## Location formats
 
