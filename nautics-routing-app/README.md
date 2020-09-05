@@ -6,6 +6,7 @@ on the Optimized Isochrones Algorithm.
 See module "nautics-routing" for more information.
 
  - [Starting the Routing Application](#starting-the-routing-application)
+   - [Running an example](#running-an-example)
  - [Application configuration](#application-configuration)
    - [Start and destination start time and simulation interval](#start-and-destination-start-time-and-simulation-interval)
    - [Meteological data and boat polars](#meteological-data-and-boat-polars)
@@ -13,8 +14,9 @@ See module "nautics-routing" for more information.
    - [Boundary Box](#boundary-box)
    - [Forbidden Areas](#forbidden-areas)
    - [Borders](#borders)
- - [Location formats](#location-formats)
- - [Time format and time zones](#time-format-and-time-zones)
+ - [Values and formats](#values-and-formats)
+   - [Locations, latitudes and longitudes](#locations-latitudes-and-longitudes)
+   - [Time format and time zones](#times-and-time-zones)
 
 ## Starting the Routing Application
 
@@ -134,14 +136,14 @@ To avoid these useless routes, Barry's Routing Application supports the definiti
 
 For performance reasons you should keep the amount of forbidden areas small. It is recommended to start without forbidden areas first and only add them, if needed.
 
-## Borders
+### Borders
 
-Some areas of the world cannot be modeled by "forbidden areas". Therefore the routing also supports borders. A border is a line of waypoints that must not be crossed by the calculated course. 
+Evaluating if a course enters a forbidden area is a fast and simple task. Unfortunately, forbidden areas are rectangular, but most coast lines of the world are not, so they often cannot be modeled by "forbidden areas". Therefore, the routing also supports borders. A border is a line of waypoints that must not be crossed by the calculated course. In routing, the routing app will ignore all possible routes with legs that intersect with a section of these borders.
 
-There can be more than one border in the ```application.properties``` file. Every border has a name and a list of waypoints. Like forbidden areas, borders can also be enabled or disabled. The indices for borders and waypoints needs to be consecutive numbers, starting at 0:
+There can be more than one border in the ```application.properties``` file. Every border has a name and a list of waypoints. Like forbidden areas, borders can also be enabled or disabled (```enabled = true``` is the default value). The indices for borders and waypoints needs to be consecutive numbers, starting at 0:
 
     routing.borders[0].name = Coast line Long Island
-    routing.borders[0].enabled = false
+    routing.borders[0].enabled = true
     routing.borders[0].locations[0] = N 40 34 03  W 74 00 28
     routing.borders[0].locations[1] = N 40 32 20  W 73 56 25
     routing.borders[0].locations[2] = N 40 37 14  W 73 12 06
@@ -149,9 +151,11 @@ There can be more than one border in the ```application.properties``` file. Ever
     routing.borders[0].locations[4] = N 41 03 26  W 71 50 07
     routing.borders[0].locations[5] = N 41 19 00  W 71 48 18
     
-For performance reasons you should keep the amount of borders small.
+For performance reasons you should keep the amount of borders, and the number of locations per border small.
 
-## Location formats
+## Values and formats
+
+### Locations, latitudes and longitudes
 
 Locations like the start and end point of your weather routing are defined in latitudes and longitudes. The configuration of the routing app supports a variaty of formats. In order to avoid encoding problems it is recommended not to use special characters like ° or ' or ".
 
@@ -175,7 +179,7 @@ For single latitudes and longitudes, like used in the definition of forbidden ar
     routing.forbiddenAreas[1].east  =W 72 20.000
     routing.forbiddenAreas[1].west  =W 73 50.000
    
-## Time format and time zones
+### Times and time zones
 
 All times used in this program are UTC times.
 
