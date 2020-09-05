@@ -35,6 +35,16 @@ Start the routing with the following command.
    
 Make sure that the ```application.properties``` file is located in your working directory.
 
+### Running an example
+
+The workspace contains GRIB2 files and a matching ```application.properties``` files in the examples folder.
+
+In order to calculate the route for the example race "Helgoland to Dublin" check out the ```application.properties```
+in the folder ```examples/helgoland-dublin```. To start the routing, run the following command from within the ```nautics-routing-app``` folder:
+
+   java -jar -Dspring.config.location=./examples/helgoland-dublin/application.properties target/routing-app-1.0-SNAPSHOT.jar
+
+
 ## Application configuration
 
 The routing parameters are configured in the file ```application.properties```.
