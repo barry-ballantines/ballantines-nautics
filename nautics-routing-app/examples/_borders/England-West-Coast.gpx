@@ -1,0 +1,29 @@
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="OpenLayers"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <trk>
+    <name>OpenLayers_Feature_Vector_7811</name>
+    <desc>No description available</desc>
+    <trkseg>
+      <trkpt lon="-3.437520358886508" lat="54.90097333474666"/>
+      <trkpt lon="-3.134370561523559" lat="53.92654118651782"/>
+      <trkpt lon="-3.235994096679797" lat="53.422177852932265"/>
+      <trkpt lon="-4.548860307617269" lat="53.44672166877711"/>
+      <trkpt lon="-4.7603471240235455" lat="53.30745254099746"/>
+      <trkpt lon="-4.428010698242344" lat="53.077074233983396"/>
+      <trkpt lon="-4.845491166992363" lat="52.779052075688895"/>
+      <trkpt lon="-4.139619584961052" lat="52.55251735779723"/>
+      <trkpt lon="-4.400544877929857" lat="52.235748209234764"/>
+      <trkpt lon="-5.089936967773569" lat="52.04695913741826"/>
+      <trkpt lon="-5.41403364746106" lat="51.85397631541177"/>
+      <trkpt lon="-5.089936967773569" lat="51.566357933021386"/>
+      <trkpt lon="-4.2110307177736255" lat="51.51169160333239"/>
+      <trkpt lon="-3.584810014648598" lat="51.38845218486602"/>
+      <trkpt lon="-3.708406206054879" lat="51.28378059182663"/>
+      <trkpt lon="-4.263215776367333" lat="51.22533529051084"/>
+      <trkpt lon="-4.551606889648536" lat="51.03228383369664"/>
+      <trkpt lon="-5.784822221679814" lat="50.09719505664488"/>
+      <trkpt lon="-5.681821201171832" lat="50.026224848702235"/>
+    </trkseg>
+  </trk>
+</gpx>

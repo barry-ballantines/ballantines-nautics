@@ -44,8 +44,9 @@ The workspace contains GRIB2 files and a matching ```application.properties``` f
 In order to calculate the route for the example race "Helgoland to Dublin" check out the ```application.properties```
 in the folder ```examples/helgoland-dublin```. To start the routing, run the following command from within the ```nautics-routing-app``` folder:
 
-   java -jar -Dspring.config.location=./examples/helgoland-dublin/application.properties target/routing-app-1.0-SNAPSHOT.jar
+    java -jar ../../target/routing-app-1.0-SNAPSHOT.jar
 
+the WINDOWS or LINUX starting scripts instead.
 
 ## Application configuration
 
@@ -79,7 +80,7 @@ The weather information needs to be downloaded as a GRIB2 file. I recommend to u
 The polar diagrams of your boat need to be provided in a ```.pol``` file. Check out the examples in the ```polars/``` folder.
 
     # Polars
-    routing.polar.file  =./polars/Imoca-60.pol
+    routing.polar.file  =./examples/_polars/Imoca-60.pol
     
 ### Output
 
@@ -155,7 +156,7 @@ It is also possible to read borders from GPX files as shown in the following exa
 
     routing.borders[1].name = England West coast
     routing.borders[1].enabled = true
-    routing.borders[1].gpx = ./borders/England-West-Coast.gpx
+    routing.borders[1].gpx = ./examples/_borders/England-West-Coast.gpx
     
 For performance reasons you should keep the amount of borders, and the number of locations per border small.
 
