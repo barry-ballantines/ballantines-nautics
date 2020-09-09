@@ -3,6 +3,7 @@ package ballantines.nautics.routing.app;
 import ballantines.nautics.routing.IsochronesListener;
 import ballantines.nautics.routing.IsochronesRouting;
 import ballantines.nautics.routing.Leg;
+import ballantines.nautics.routing.app.parsers.GPXParser;
 import ballantines.nautics.routing.export.GPXExport;
 import ballantines.nautics.routing.export.SailawayRouteExport;
 import ballantines.nautics.routing.filter.CombinedLegFilter;
@@ -118,9 +119,13 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
       for (Border border : config.getBorders()) {
         if (border.isEnabled()) {
           System.out.printf(" - name: %s %n", border.getName());
-          System.out.printf("   locations: %n");
-          for (String loc : border.getLocations()) {
-            System.out.printf("              %s %n", loc);
+          if (border.getGpx()!=null) {
+            System.out.printf("   gpx:  %s %n", border.getGpx().toString());
+          } else {
+            System.out.printf("   locations: %n");
+            for (String loc : border.getLocations()) {
+              System.out.printf("              %s %n", loc);
+            }
           }
         }
       }
@@ -144,7 +149,10 @@ public class RoutingApplication implements CommandLineRunner, IsochronesListener
     List<Border> borders = config.getBorders();
     borders.stream().filter(b -> b.isEnabled()).forEach(b -> {
       CrossingBorderLegFilter filter = new CrossingBorderLegFilter();
-      filter.setBorder(b.getLatLons());
+      List<LatLon> latlons =  (b.getGpx()==null)
+              ? b.getLatLons()
+              : new GPXParser(b.getGpx()).parse();
+      filter.setBorder(latlons);
       legFilters.add(filter);
     });
 

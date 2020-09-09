@@ -4,6 +4,7 @@ import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.LatLonFormat;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,8 @@ import java.util.stream.Stream;
 
 @Configuration
 public class Border {
+
+  private File gpx = null;
   private String name = "N/A";
   private boolean enabled = true;
   private List<String> locations = new ArrayList<>();
@@ -43,5 +46,13 @@ public class Border {
   public List<LatLon> getLatLons() {
     Stream<LatLon>  latLonStream = this.getLocations().stream().map(LatLonFormat::parse);
     return latLonStream.collect(Collectors.toList());
+  }
+
+  public void setGpx(File gpx) {
+    this.gpx = gpx;
+  }
+
+  public File getGpx() {
+    return gpx;
   }
 }
