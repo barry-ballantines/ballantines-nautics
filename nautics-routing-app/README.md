@@ -151,6 +151,12 @@ There can be more than one border in the ```application.properties``` file. Ever
     routing.borders[0].locations[4] = N 41 03 26  W 71 50 07
     routing.borders[0].locations[5] = N 41 19 00  W 71 48 18
     
+It is also possible to read borders from GPX files as shown in the following example:
+
+    routing.borders[1].name = England West coast
+    routing.borders[1].enabled = true
+    routing.borders[1].gpx = ./borders/England-West-Coast.gpx
+    
 For performance reasons you should keep the amount of borders, and the number of locations per border small.
 
 ## Values and formats
