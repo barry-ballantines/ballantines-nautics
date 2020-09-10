@@ -7,6 +7,7 @@ package ballantines.nautics.routing;
 
 import java.util.*;
 
+import ballantines.nautics.routing.filter.CombinedLegFilter;
 import ballantines.nautics.routing.filter.LegFilter;
 import ballantines.nautics.routing.polar.Polar;
 import ballantines.nautics.routing.reduce.DivergingConvergingReduceStrategy;
@@ -276,6 +277,21 @@ public class IsochronesRouting {
 
   public void setLegFilter(LegFilter legFilter) {
     this.legFilter = legFilter;
+  }
+
+  public void addLegFilter(LegFilter legFilter) {
+    if (this.legFilter == null) {
+      this.legFilter = legFilter;
+    }
+    else if (this.legFilter instanceof CombinedLegFilter) {
+      ((CombinedLegFilter) this.legFilter).add(legFilter);
+    }
+    else {
+      CombinedLegFilter combined = new CombinedLegFilter();
+      combined.add(this.legFilter);
+      combined.add(legFilter);
+      this.legFilter = combined;
+    }
   }
 
   public void setIsochronesListener(IsochronesListener isochronesListener) {

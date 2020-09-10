@@ -2,11 +2,9 @@ package ballantines.nautics.routing.app;
 
 import ballantines.nautics.units.LatLon;
 import ballantines.nautics.units.LatLonFormat;
-import ballantines.nautics.utils.LatLonBounds;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
 import tec.units.ri.quantity.Quantities;
 import tec.units.ri.unit.Units;
 
@@ -14,10 +12,7 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Time;
 import java.io.File;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
