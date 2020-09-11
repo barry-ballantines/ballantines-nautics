@@ -37,6 +37,7 @@ public class RoutingApplication implements CommandLineRunner {
           new Grib2ConfigurationFeature(),
           new PolarConfigurationFeature(),
           new ExportFileConfiguration(),
+          new AngularResolutionFeature(),
           new ForbiddenAreasConfigurationFeature(),
           new ForbiddenBorderConfigurationFeature()
 	    };

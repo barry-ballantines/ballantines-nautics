@@ -58,6 +58,13 @@ public class Config {
   @Value("${routing.simulation.period.hours:3.0}")
   private double simulationPeriodHours;
 
+  @Value("${routing.simulation.candidates.resolution:1}")
+  private int candidatesAngularResolution;
+
+  @Value("${routing.simulation.isochrones.resolution:1}")
+  private int isochronesAngularResolution;
+
+
   private Bounds boundaryBox = null;
 
   public Bounds getBoundaryBox() {
@@ -142,6 +149,14 @@ public class Config {
 
   public Optional<File> getSailawayExportRouteFile() {
     return Optional.ofNullable(exportSailawayRouteFile);
+  }
+
+  public int getCandidatesAngularResolution() {
+    return candidatesAngularResolution;
+  }
+
+  public int getIsochronesAngularResolution() {
+    return isochronesAngularResolution;
   }
 
   private Optional<LatLon> parseLatLon(String string) {

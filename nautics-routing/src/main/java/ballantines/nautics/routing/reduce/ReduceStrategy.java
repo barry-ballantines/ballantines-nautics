@@ -12,6 +12,15 @@ public interface ReduceStrategy {
   }
 
   /**
+   * the angular resolution used to reduce isochrone candidates in degrees (defaults to 1°).
+   *
+   * @param resolution
+   */
+  default void setResolution(int resolution) {
+    // do nothing...
+  }
+
+  /**
    * This method reduces the candidates to a sorted isochrone.
    * @param candidates - all possible legs that contribute to an isochrone
    * @return the actual isochrone - the isochrones are sorted

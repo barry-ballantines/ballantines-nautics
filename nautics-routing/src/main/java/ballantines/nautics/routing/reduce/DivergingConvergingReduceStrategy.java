@@ -21,6 +21,15 @@ public class DivergingConvergingReduceStrategy implements ReduceStrategy {
   private Quantity<Angle> bearingAtStart;
   private Quantity<Angle> bearingAtDestination;
 
+  private int resolution = 1;
+  private boolean maxResolution = (resolution==1);
+
+  @Override
+  public void setResolution(int resolution) {
+    this.resolution = resolution;
+    this.maxResolution = (resolution==1);
+  }
+
   @Override
   public void initialize(RoutingContext context) {
     Geoid geoid = context.getGeoid();
@@ -30,8 +39,6 @@ public class DivergingConvergingReduceStrategy implements ReduceStrategy {
 
     this.bearingAtStart = courseVectorAtStart.getAngle();
     this.bearingAtDestination = courseVectorAtDestination.getAngle();
-
-
   }
 
   @Override
@@ -81,7 +88,7 @@ public class DivergingConvergingReduceStrategy implements ReduceStrategy {
         double actualDistance = actual.getVectorFromStart().getRadial(NAUTICAL_MILE);
         double previousDistance = previous.getVectorFromStart().getRadial(NAUTICAL_MILE);
         if (actualDistance > previousDistance) {
-          sectors.put(sector, actual); // actual is farer from start
+          sectors.put(sector, actual); // actual is farther from start
           return;
         }
       }
@@ -100,15 +107,19 @@ public class DivergingConvergingReduceStrategy implements ReduceStrategy {
     // calculate sector...
     if (isConverging) {
       Quantity<Angle> delta = actualFromDestination.getAngle().subtract(bearingAtDestination);
-      sector = - Math.round(AngleUtil.normalizeToUpperBound(delta, AngleUtil.DEGREE_180).getValue().floatValue());
+      sector = - roundToSector(AngleUtil.normalizeToUpperBound(delta, AngleUtil.DEGREE_180).getValue().floatValue());
     } else {
       Quantity<Angle> delta = actualFromStart.getAngle().subtract(bearingAtStart);
-      sector = Math.round(AngleUtil.normalizeToUpperBound(delta,AngleUtil.DEGREE_180).getValue().floatValue());
+      sector = roundToSector(AngleUtil.normalizeToUpperBound(delta,AngleUtil.DEGREE_180).getValue().floatValue());
     }
     if (sector==-180) {
       sector = 180; // close the circle
     }
 
     return sector;
+  }
+
+  private int roundToSector(float rawAngle) {
+    return (maxResolution) ? Math.round(rawAngle) : resolution * Math.round(rawAngle / resolution);
   }
 }

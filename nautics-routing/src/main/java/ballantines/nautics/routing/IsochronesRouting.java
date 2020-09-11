@@ -48,11 +48,15 @@ public class IsochronesRouting {
   private Quantity<Time> period = Quantities.getQuantity(6.0, HOUR);
   private IsochronesListener isochronesListener;
 
+  // fine tuning...
+  private int candidatesAngularResolution = 1;
+  private int isochronesAngularResolution = 1;
+
   
   // === METHODS ===
   
   public Leg start() {
-
+    reduceStrategy.setResolution(isochronesAngularResolution);
     reduceStrategy.initialize(this.context);
     Leg start = Leg.createStartingLeg(this.context);
     
@@ -104,7 +108,7 @@ public class IsochronesRouting {
     PolarVector<Speed> trueWind = windfield.getWind(reference.endpoint, reference.time);
     
     List<Leg> newCandidates = new LinkedList<>();
-    for (int angle = -179; angle <= 180; angle++) {
+    for (int angle = 180; angle > -180; angle = angle - candidatesAngularResolution) {
       Quantity<Angle> bearing = degrees((double) angle);
       PolarVector<Speed> velocity = polar.getVelocity(trueWind.getRadial(), twa(bearing, trueWind.getAngle())); // sm/h
       Quantity<Length> distance = velocity.getRadial().multiply(period).asType(Length.class);
@@ -218,6 +222,24 @@ public class IsochronesRouting {
   }
   
   // === ACCESSORS ===
+
+  /**
+   * the resolution used to calculate isochrone candidates.
+   *
+   * @param candidatesAngularResolution default value is 1°
+   */
+  public void setCandidatesAngularResolution(int candidatesAngularResolution) {
+    this.candidatesAngularResolution = candidatesAngularResolution;
+  }
+
+  /**
+   * the resolution used for reducing the isochrone candidates.
+   *
+   * @param isochronesAngularResolution default value is 1°
+   */
+  public void setIsochronesAngularResolution(int isochronesAngularResolution) {
+    this.isochronesAngularResolution = isochronesAngularResolution;
+  }
 
   /**
    * @param startingPoint the startingPoint to set
