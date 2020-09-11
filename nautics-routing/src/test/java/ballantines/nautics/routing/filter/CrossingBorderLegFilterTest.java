@@ -53,6 +53,26 @@ public class CrossingBorderLegFilterTest {
 
   }
 
+  @Test
+  public void test_crossing_pacific() {
+    LatLon a1 = new LatLon( 00., +170.);
+    LatLon a2 = new LatLon(+10. ,+180.);
+    LatLon b1 = new LatLon(+10., +170.);
+    LatLon b2 = new LatLon(-10., -170.);
+
+    assertCrossing("a crosses b", true, a1, a2, b1, b2);
+    assertCrossing("b crosses a", true, b1, b2, a1, a2);
+
+    assertCrossing("-a crosses b", true, a2, a1, b1, b2);
+    assertCrossing("-b crosses a", true, b2, b1, a1, a2);
+
+    assertCrossing("a crosses -b", true, a1, a2, b2, b1);
+    assertCrossing("b crosses -a", true, b1, b2, a2, a1);
+
+    assertCrossing("-a crosses -b", true, a2, a1, b2, b1);
+    assertCrossing("-b crosses -a", true, b2, b1, a2, a1);
+  }
+
   private void assertCrossing(String message, boolean expected, LatLon a1, LatLon a2, LatLon b1, LatLon b2) {
     CrossingBorderLegFilter filter = new CrossingBorderLegFilter();
     filter.setBorder(Arrays.asList(a1, a2));

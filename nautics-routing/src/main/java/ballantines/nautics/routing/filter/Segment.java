@@ -25,8 +25,21 @@ public class Segment {
   }
 
   public static Segment of(LatLon start, LatLon end) {
-    double x = end.getLongitude().subtract(start.getLongitude()).to(NauticalUnits.ARC_DEGREE).getValue().doubleValue();
-    double y = end.getLatitude().subtract(start.getLatitude()).to(NauticalUnits.ARC_DEGREE).getValue().doubleValue();
-    return new Segment(x, y);
+    double deltaLon  = end.getLongitude().subtract(start.getLongitude()).to(NauticalUnits.ARC_DEGREE).getValue().doubleValue();
+    double deltaLat = end.getLatitude().subtract(start.getLatitude()).to(NauticalUnits.ARC_DEGREE).getValue().doubleValue();
+
+    deltaLon = correctLongitude(deltaLon);
+    return new Segment(deltaLon, deltaLat);
+  }
+
+  /* correct longitudes if x > 180° or x < -180°. We are crossing the E 180° meridian! */
+  private static double correctLongitude(double lon) {
+    if (lon > 180.) {
+      return lon - 360.;
+    }
+    if (lon < -180.) {
+      return lon + 360.;
+    }
+    return lon;
   }
 }
