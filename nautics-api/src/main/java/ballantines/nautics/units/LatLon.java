@@ -38,6 +38,25 @@ public class LatLon {
   public Quantity<Angle> getLongitude() {
     return lon;
   }
+
+  public boolean isEastOf(LatLon that) {
+    Quantity<Angle> delta = AngleUtil.delta(that.getLongitude(), this.getLongitude()).to(NauticalUnits.ARC_DEGREE);
+    return delta.getValue().doubleValue() > 0;
+
+  }
+
+  public boolean isWestOf(LatLon that) {
+    return that.isEastOf(this);
+  }
+
+  public boolean isNorthOf(LatLon that) {
+    Quantity<Angle> delta = AngleUtil.delta(that.getLatitude(), this.getLatitude()).to(NauticalUnits.ARC_DEGREE);
+    return delta.getValue().doubleValue() > 0;
+  }
+
+  public boolean isSouthOf(LatLon that) {
+    return that.isNorthOf(this);
+  }
   
   public Point2D toPoint2D() {
     return new Point2D() {

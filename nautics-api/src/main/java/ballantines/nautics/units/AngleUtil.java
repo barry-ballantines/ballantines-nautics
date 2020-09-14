@@ -123,7 +123,7 @@ public class AngleUtil {
    * @return the angle from theta to phi (=theta-phi). normalized to ]-180°, 180°]. 
    *         negative values indicate left turn, positive values indicate right turn.
    */
-  public static Quantity<Angle>delta(Quantity<Angle> phi, Quantity<Angle> theta) {
+  public static Quantity<Angle> delta(Quantity<Angle> phi, Quantity<Angle> theta) {
     return normalizeToUpperBound(theta.subtract(phi), DEGREE_180);
   }
 
