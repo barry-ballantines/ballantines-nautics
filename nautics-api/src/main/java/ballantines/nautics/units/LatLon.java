@@ -39,24 +39,38 @@ public class LatLon {
     return lon;
   }
 
+  public boolean isEastOf(Quantity<Angle> lon) {
+    Quantity<Angle> delta = AngleUtil.delta(lon, this.getLongitude()).to(NauticalUnits.ARC_DEGREE);
+    return delta.getValue().doubleValue() > 0;
+  }
+  public boolean isWestOf(Quantity<Angle> lon) {
+    Quantity<Angle> delta = AngleUtil.delta(this.getLongitude(), lon).to(NauticalUnits.ARC_DEGREE);
+    return delta.getValue().doubleValue() > 0;
+  }
+
   public boolean isEastOf(LatLon that) {
-    Quantity<Angle> delta = AngleUtil.delta(that.getLongitude(), this.getLongitude()).to(NauticalUnits.ARC_DEGREE);
-    return delta.getValue().doubleValue() > 0;
-
+    return this.isEastOf(that.getLongitude());
   }
-
   public boolean isWestOf(LatLon that) {
-    return that.isEastOf(this);
+    return this.isWestOf(that.getLongitude());
   }
 
-  public boolean isNorthOf(LatLon that) {
-    Quantity<Angle> delta = AngleUtil.delta(that.getLatitude(), this.getLatitude()).to(NauticalUnits.ARC_DEGREE);
+  public boolean isNorthOf(Quantity<Angle> lat) {
+    Quantity<Angle> delta = AngleUtil.delta(lat, this.getLatitude()).to(NauticalUnits.ARC_DEGREE);
     return delta.getValue().doubleValue() > 0;
   }
 
-  public boolean isSouthOf(LatLon that) {
-    return that.isNorthOf(this);
+  public boolean isSouthOf(Quantity<Angle> lat) {
+    Quantity<Angle> delta = AngleUtil.delta(this.getLatitude(), lat).to(NauticalUnits.ARC_DEGREE);
+    return delta.getValue().doubleValue() > 0;
   }
+  public boolean isNorthOf(LatLon that) {
+    return this.isNorthOf(that.getLatitude());
+  }
+  public boolean isSouthOf(LatLon that) {
+    return this.isSouthOf(that.getLatitude());
+  }
+
   
   public Point2D toPoint2D() {
     return new Point2D() {

@@ -5,6 +5,7 @@ import ballantines.nautics.routing.app.Border;
 import ballantines.nautics.routing.app.Config;
 import ballantines.nautics.routing.app.Input;
 import ballantines.nautics.routing.app.parsers.GPXParser;
+import ballantines.nautics.routing.filter.BoundCrossingBorderLegFilter;
 import ballantines.nautics.routing.filter.CrossingBorderLegFilter;
 import ballantines.nautics.units.LatLon;
 
@@ -38,7 +39,7 @@ public class ForbiddenBorderConfigurationFeature implements Feature {
   @Override
   public void decorate(IsochronesRouting routing) {
     borders.stream().filter(b -> b.isEnabled()).forEach(b -> {
-      CrossingBorderLegFilter filter = new CrossingBorderLegFilter();
+      CrossingBorderLegFilter filter = new BoundCrossingBorderLegFilter();
       List<LatLon> latlons =  (b.getGpx()==null)
               ? b.getLatLons()
               : new GPXParser(b.getGpx()).parse();

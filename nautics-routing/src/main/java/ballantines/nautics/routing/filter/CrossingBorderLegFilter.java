@@ -24,7 +24,7 @@ public class CrossingBorderLegFilter implements LegFilter {
     return true;
   }
 
-  private boolean isIntercepting(LatLon a1, LatLon a2, LatLon b1, LatLon b2) {
+  protected boolean isIntercepting(LatLon a1, LatLon a2, LatLon b1, LatLon b2) {
     Segment a1a2 = Segment.of(a1, a2);
     Segment a2b1 = Segment.of(a2, b1);
     Segment a2b2 = Segment.of(a2, b2);
