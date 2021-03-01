@@ -224,6 +224,13 @@ public class IsochronesRouting {
   // === ACCESSORS ===
 
   /**
+   * @returns the context
+   */
+  public RoutingContext getContext() {
+    return context;
+  }
+
+  /**
    * the resolution used to calculate isochrone candidates.
    *
    * @param candidatesAngularResolution default value is 1°
@@ -297,6 +304,10 @@ public class IsochronesRouting {
     this.windfield = windfield;
   }
 
+  public WindField getWindfield() {
+    return this.windfield;
+  }
+
   public void setLegFilter(LegFilter legFilter) {
     this.legFilter = legFilter;
   }
@@ -319,4 +330,6 @@ public class IsochronesRouting {
   public void setIsochronesListener(IsochronesListener isochronesListener) {
     this.isochronesListener = isochronesListener;
   }
+
+
 }

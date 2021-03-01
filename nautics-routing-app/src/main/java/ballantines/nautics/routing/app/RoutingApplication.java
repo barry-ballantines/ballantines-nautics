@@ -1,6 +1,7 @@
 package ballantines.nautics.routing.app;
 
 import ballantines.nautics.routing.IsochronesRouting;
+import ballantines.nautics.routing.RoutingCalibration;
 import ballantines.nautics.routing.app.features.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
@@ -64,12 +65,24 @@ public class RoutingApplication implements CommandLineRunner {
 
     Arrays.stream(features).forEach(f -> f.decorate(routing));
 
-    input.println("=== STARTING SIMULATION ===");
-    input.println("");
+    if (args.length > 0 && "calibrate".equals(args[0])) {
+      input.println("=== CALIBRATE ===");
+      input.println("");
 
-    this.routing.start();
+      calibrate();
+    }
+    else {
+      input.println("=== STARTING SIMULATION ===");
+      input.println("");
+
+      this.routing.start();
+    }
 	}
 
+	private void calibrate() {
+    RoutingCalibration calibration = new RoutingCalibration(this.routing);
+    calibration.start();
+  }
 
 
 
