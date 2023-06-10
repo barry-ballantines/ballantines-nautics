@@ -2,3 +2,6 @@
 /nautics-api/nbproject/
 /nautics-routing/target/
 /nautics-routing/nbproject/
+target/
+.vscode/
+*.class
