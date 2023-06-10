@@ -33,11 +33,19 @@ public class GPXParser {
 
   private static class LatLonHandler extends DefaultHandler {
 
+    private static final String ELEMENT_TRK = "trk";
     private static final String ELEMENT_TRKPT = "trkpt";
+
+    private static final String ELEMENT_RTE = "rte";
+    private static final String ELEMENT_RTEPT = "rtept";
+
     private static final String ATTRIBUTE_LAT = "lat";
     private static final String ATTRIBUTE_LON = "lon";
 
+
     private List<LatLon> waypoints = new ArrayList<>();
+
+    private boolean skip = false;
 
     public List<LatLon> getWaypoints() {
       return waypoints;
@@ -45,8 +53,19 @@ public class GPXParser {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-      if (ELEMENT_TRKPT.equals(qName) || ELEMENT_TRKPT.equals(localName)) {
+      if (skip) return;
+      if (ELEMENT_TRKPT.equals(qName) || ELEMENT_TRKPT.equals(localName)
+          || ELEMENT_RTEPT.equals(qName) || ELEMENT_RTEPT.equals(localName)) {
         storeWaypoint(attributes);
+      }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+      if (skip) return;
+      if (ELEMENT_TRK.equals(qName) || ELEMENT_RTE.equals(qName)
+          || ELEMENT_TRK.equals(localName) || ELEMENT_RTE.equals(localName)) {
+        skip = true;
       }
     }
 
